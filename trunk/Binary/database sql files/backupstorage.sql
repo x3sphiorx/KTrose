@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Generation Time: Dec 07, 2012 at 09:36 AM
+-- Generation Time: Dec 07, 2012 at 01:08 PM
 -- Server version: 5.0.45
 -- PHP Version: 5.2.3
 
@@ -33,7 +33,10 @@ CREATE TABLE IF NOT EXISTS `backupstorage` (
   `socketed` varchar(1024) collate latin1_general_ci NOT NULL default '0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0',
   `appraised` varchar(1024) collate latin1_general_ci NOT NULL default '0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0',
   `trans_action` varchar(200) collate latin1_general_ci default '0',
-  `datestamp` varchar(20) collate latin1_general_ci NOT NULL,
+  `datestamp` varchar(50) collate latin1_general_ci NOT NULL,
   `thisrev` int(11) NOT NULL default '1'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
+-- 
+-- Dumping data for table `backupstorage`
+-- 
