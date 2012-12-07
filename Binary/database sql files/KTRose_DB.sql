@@ -13189,7 +13189,7 @@ CREATE TABLE IF NOT EXISTS `questflags` (
 DROP TABLE IF EXISTS `runtime`;
 CREATE TABLE IF NOT EXISTS `runtime` (
   `id` int(11) NOT NULL auto_increment,
-  `starttime` varchar(20) collate latin1_general_ci NOT NULL,
+  `starttime` varchar(50) collate latin1_general_ci NOT NULL,
   `hours` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci AUTO_INCREMENT=256 ;
