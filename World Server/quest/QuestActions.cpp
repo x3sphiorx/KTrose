@@ -1013,7 +1013,7 @@ QUESTREWD(028)
 QUESTREWD(029) //execute client quest trigger (LUA)
 {
     GETREWDDATA(029);
-    char* tempName = reinterpret_cast<char*>(&data->szNextTriggerSN) - 2;
+    char* tempName = reinterpret_cast<char*>(&data->LuaName) - 2;
 	dword hash = MakeStrHash(tempName);
     if( client->questdebug )
         server->SendPM(client, "Execute Client LUA %s[%d] [%08x]", tempName, data->strLen, hash);
