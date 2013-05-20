@@ -379,7 +379,19 @@ void CCharacter::NormalAttack( CCharacter* Enemy )
         GServer->SendToVisible( &pak, Enemy );
         ClearBattle(Battle);
         //ClearBattle(Enemy->Battle);
+        CMonster* monster = reinterpret_cast<CMonster*>(Enemy);
+        if(monster == NULL)
+        {
+            Log(MSG_DEBUG,"Monster killed. Failed to create monster object");
+            return;
+        }
+        else
+        {
+            Log(MSG_DEBUG,"Monster killed. Setting death delay timer");
+            monster->DeathDelayTimer = clock();
+        }
         OnEnemyDie( Enemy );
+        GServer->SendToVisible( &pak, Enemy );
     }
     else
     {
@@ -798,9 +810,21 @@ void CCharacter::UseAtkSkill( CCharacter* Enemy, CSkills* skill, bool deBuff)
             }
           }
         }
-        GServer->SendToVisible( &pak, Enemy );
+
+        CMonster* monster = reinterpret_cast<CMonster*>(Enemy);
+        if(monster == NULL)
+        {
+            Log(MSG_DEBUG,"Monster killed. Failed to create monster object");
+            return;
+        }
+        else
+        {
+            Log(MSG_DEBUG,"Monster killed. Setting death delay timer");
+            monster->DeathDelayTimer = clock();
+        }
         OnEnemyDie( Enemy );
         ClearBattle(Battle);
+        GServer->SendToVisible( &pak, Enemy );
     }
     else
     {

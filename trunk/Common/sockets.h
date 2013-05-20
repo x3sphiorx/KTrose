@@ -224,9 +224,10 @@ struct CROSEServerConfig
     UINT MapDelay;
     UINT VisualDelay;
     UINT WorldDelay;
+    UINT DeathDelay;                 //Set a timer delay so that we don't have a problem with monster death
     UINT AIWatch;                    //Set an AI script number to watch for. Debug only
     UINT SpawnType;
-    
+
     char* WELCOME_MSG;
     UINT DROP_TYPE;
     int MaxStat;
@@ -252,7 +253,7 @@ struct CROSEServerConfig
     UINT AttkMult;
     UINT SkillMult;
     UINT DropDelay;
-    
+
 
     // COMMAND LEVELS
     int Command_Go;

@@ -35,6 +35,7 @@ class CMonster : public CCharacter
      	clock_t lastSighCheck;
      	clock_t lastDegenTime;
      	clock_t lastAiUpdate;
+     	clock_t DeathDelayTimer;
 
         MDrop* MonsterDrop;
         UINT activecycle;

@@ -1104,3 +1104,172 @@
 1337874070 source:e:\osprose\world server\worldserver.cpp
 	"worldserver.h"
 
+1369058054 source:f:\triggersoft\ktrose server svn\trunk\common\socketbase.cpp
+	"sockets.h"
+
+1369059143 f:\triggersoft\ktrose server svn\trunk\common\sockets.h
+	<windows.h>
+	<winsock2.h>
+	<unistd.h>
+	<netinet/in.h>
+	<sys/socket.h>
+	<sys/types.h>
+	<arpa/inet.h>
+	<sys/ioctl.h>
+	<cstdarg>
+	<errno.h>
+	<mysql/mysql.h>
+	<cstdio>
+	<cstdlib>
+	<iostream>
+	<vector>
+	<string>
+	<cstdio>
+	<exception>
+	<time.h>
+	<assert.h>
+	<math.h>
+	<cmath>
+	<map>
+	<pthread.h>
+	<vector>
+	<csignal>
+	"log.h"
+	"rosecrypt.hpp"
+	"config.h"
+	"database/database.h"
+
+1369058056 f:\triggersoft\ktrose server svn\trunk\common\log.h
+
+1369058054 f:\triggersoft\ktrose server svn\trunk\common\rosecrypt.hpp
+
+1369058054 f:\triggersoft\ktrose server svn\trunk\common\config.h
+
+1369058054 f:\triggersoft\ktrose server svn\trunk\common\database\database.h
+	"../sockets.h"
+
+1369058056 source:f:\triggersoft\ktrose server svn\trunk\common\socketclient.cpp
+	"sockets.h"
+	"seh.hpp"
+	"config.h"
+
+1369058056 f:\triggersoft\ktrose server svn\trunk\common\seh.hpp
+	<windows.h>
+	<excpt.h>
+	<setjmp.h>
+
+1369058054 source:f:\triggersoft\ktrose server svn\trunk\common\socketserver.cpp
+	"sockets.h"
+
+1369058054 source:f:\triggersoft\ktrose server svn\trunk\common\config.cpp
+	<cstdio>
+	<cstring>
+	<cstdlib>
+	<ctype.h>
+
+1369058054 source:f:\triggersoft\ktrose server svn\trunk\common\database\database.cpp
+	"database.h"
+	"../log.h"
+
+1369058054 source:f:\triggersoft\ktrose server svn\trunk\common\globals.cpp
+	"sockets.h"
+
+1369058054 source:f:\triggersoft\ktrose server svn\trunk\common\log.cpp
+	<conio.h>
+	<windows.h>
+	<cstdio>
+	<cstdio>
+	<string>
+	<time.h>
+	"log.h"
+
+1369058056 source:f:\triggersoft\ktrose server svn\trunk\common\rosecrypt.cpp
+	<fstream>
+	<iostream>
+	"rosecrypt.hpp"
+	<cstdlib>
+
+1369058054 source:f:\triggersoft\ktrose server svn\trunk\common\seh.cpp
+	"seh.hpp"
+
+1369058067 source:f:\triggersoft\ktrose server svn\trunk\world server\buff.cpp
+	"worldserver.h"
+
+1369058067 f:\triggersoft\ktrose server svn\trunk\world server\worldserver.h
+	"../common/sockets.h"
+	"worldmonster.h"
+	"quest/CRoseArray.hpp"
+	"quest/CRoseFile.hpp"
+	"quest/CStrStb.hpp"
+	"quest/CIntStb.hpp"
+	"quest/QuestTrigger.h"
+	"aip/Aip.h"
+	"worldmap.h"
+	"player.h"
+	"character.h"
+	"party.h"
+	"datatypes.h"
+	"stbhandler.h"
+	"strhashing.h"
+
+1369058639 f:\triggersoft\ktrose server svn\trunk\world server\worldmonster.h
+	"character.h"
+	"player.h"
+	"worldserver.h"
+
+1369058058 f:\triggersoft\ktrose server svn\trunk\world server\character.h
+	"chartype.h"
+
+1369058067 f:\triggersoft\ktrose server svn\trunk\world server\chartype.h
+	"datatypes.h"
+
+1369058064 f:\triggersoft\ktrose server svn\trunk\world server\datatypes.h
+	"../common/sockets.h"
+
+1369058063 f:\triggersoft\ktrose server svn\trunk\world server\player.h
+	"character.h"
+
+1369058064 f:\triggersoft\ktrose server svn\trunk\world server\quest\crosearray.hpp
+	<memory.h>
+
+1369058064 f:\triggersoft\ktrose server svn\trunk\world server\quest\crosefile.hpp
+	<stdio.h>
+	<stdlib.h>
+	"CRoseArray.hpp"
+
+1369058064 f:\triggersoft\ktrose server svn\trunk\world server\quest\cstrstb.hpp
+
+1369058064 f:\triggersoft\ktrose server svn\trunk\world server\quest\cintstb.hpp
+
+1369058064 f:\triggersoft\ktrose server svn\trunk\world server\quest\questtrigger.h
+	"QuestConditions.h"
+	"QuestActions.h"
+
+1369058064 f:\triggersoft\ktrose server svn\trunk\world server\quest\questconditions.h
+
+1369058064 f:\triggersoft\ktrose server svn\trunk\world server\quest\questactions.h
+
+1369058060 f:\triggersoft\ktrose server svn\trunk\world server\aip\aip.h
+	"AiConditions.h"
+	"AiActions.h"
+
+1369058061 f:\triggersoft\ktrose server svn\trunk\world server\aip\aiconditions.h
+
+1369058060 f:\triggersoft\ktrose server svn\trunk\world server\aip\aiactions.h
+
+1369058068 f:\triggersoft\ktrose server svn\trunk\world server\worldmap.h
+	"worldserver.h"
+	"player.h"
+	"character.h"
+	"worldmonster.h"
+	"datatypes.h"
+
+1369058064 f:\triggersoft\ktrose server svn\trunk\world server\party.h
+	"worldserver.h"
+	"datatypes.h"
+
+1369058063 f:\triggersoft\ktrose server svn\trunk\world server\stbhandler.h
+	"worldserver.h"
+
+1369058060 f:\triggersoft\ktrose server svn\trunk\world server\strhashing.h
+
