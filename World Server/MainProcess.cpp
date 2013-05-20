@@ -206,7 +206,7 @@ PVOID MapProcess( PVOID TS )
                     {
                             //monster->DoAi(monster->thisnpc->AI, 1);
                          if(etime >= monster->AItimer)
-                         {         
+                         {
                             monster->DoAi(monster->monAI, 1);
                             monster->lastAiUpdate = clock();
                          }
@@ -219,14 +219,21 @@ PVOID MapProcess( PVOID TS )
                     }
                     if(monster->IsDead())
                     {
-                        //Log(MSG_DEBUG,"Found dead monster montype %i",monster->montype);
-                        monster->OnDie( );  //give exp
-                        //Log(MSG_DEBUG,"back from giving exp");
-                        monster->DoAi(monster->monAI, 5);
-                        //Log(MSG_DEBUG,"ran AI");
-                        map->DeleteMonster( monster, true, j );
-                        //Log(MSG_DEBUG,"deleted monster");
-                        continue;
+                        if(clock() - monster->DeathDelayTimer > GServer->Config.DeathDelay)
+                        {
+                            //Log(MSG_DEBUG,"Found dead monster montype %i",monster->montype);
+                            monster->OnDie( );  //give exp
+                            //Log(MSG_DEBUG,"back from giving exp");
+                            monster->DoAi(monster->monAI, 5);
+                            //Log(MSG_DEBUG,"ran AI");
+                            map->DeleteMonster( monster, true, j );
+                            //Log(MSG_DEBUG,"deleted monster");
+                            continue;
+                        }
+                        /*else
+                        {
+                            Log(MSG_DEBUG,"Dead monster found. waiting for death delay timer");
+                        }*/
                     }
                 }
             }
@@ -284,7 +291,7 @@ PVOID MapProcess( PVOID TS )
                              Log(MSG_DEBUG,"NPC AI number %i successfully run",monster->thisnpc->AI);
                          if(monster->IsOnBattle())
                              monster->DoAttack( );
-                         map->DeleteMonster(monster);
+                         //map->DeleteMonster(monster);
                          //delete monster;
                          npc->lastAiUpdate = clock();
                          if(AIP == GServer->Config.AIWatch)

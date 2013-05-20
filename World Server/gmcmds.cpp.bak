@@ -52,7 +52,7 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
         }
         return true;
     }
-    
+
     // all commands beyond here require IsGM or IsDev to be active in the character record
 	if (thisclient->CharInfo->IsGM == 0)
     {
@@ -114,7 +114,7 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
             if ((tmp = strtok(NULL, " ")) == NULL) return true; UINT newval = atoi(tmp);
             {
                 Config.MaxLevel = newval;
-                char* confname = "default";
+                const char* confname = "default";
                 GServer->DB->QExecute("UPDATE list_config SET maxlevel=%i WHERE conf='%s'",newval,confname);
             }
          }
@@ -123,7 +123,7 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
             if ((tmp = strtok(NULL, " ")) == NULL) return true; UINT newval = atoi(tmp);
             {
                 Config.EXP_RATE = newval;
-                char* confname = "default";
+                const char* confname = "default";
                 GServer->DB->QExecute("UPDATE list_config SET exp_rate=%i WHERE conf='%s'",newval,confname);
             }
          }
@@ -338,7 +338,8 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
          else if(strcmp(tmp, "mobs")==0)
              GServer->LoadNPCData( );
          else if(strcmp(tmp, "drops")==0)
-             GServer->LoadPYDropsData( );
+             //GServer->LoadPYDropsData( );
+             GServer->LoadNewDrops( );
          else if(strcmp(tmp, "cmd")==0)
              LoadConfigurations( "commands.ini" );
          else if(strcmp(tmp, "spawns")==0)
@@ -360,6 +361,13 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
          Log( MSG_GMACTION, " %s : /reload %s" , thisclient->CharInfo->charname, tmp);
          SendPM(thisclient, "%s data has been reloaded", tmp);
 	     return true;
+	}
+	else if(strcmp(command, "setspeedmod")==0)
+    {
+	    if((tmp = strtok(NULL, " ")) == NULL) return true;
+        unsigned mSpeedModif = atoi(tmp);
+	    Log( MSG_GMACTION, " mSpeedModif changed to %i by %s" , mSpeedModif, thisclient->CharInfo->charname);
+	    return pakGMChangeMSpeedModif(thisclient, mSpeedModif);
 	}
 	else if(strcmp(command, "mystat")==0)
     {
@@ -465,6 +473,10 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
          {
              SendPM(thisclient, "My item drop rate is %i", thisclient->Stats->itemdroprate);
          }
+         else if(strcmp(tmp, "serverdrop")==0)
+         {
+             SendPM(thisclient, "Server item drop rate is %i", GServer->Config.DROP_RATE);
+         }
          else if(strcmp(tmp, "clan")==0)
          {
              SendPM(thisclient, "My clan id is: %i My clan rank is: %i", thisclient->Clan->clanid, thisclient->Clan->clanrank);
@@ -472,6 +484,10 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
          else if(strcmp(tmp, "map")==0)
          {
              SendPM(thisclient, "My current is: %i ", thisclient->Position->Map);
+         }
+         else if(strcmp(tmp, "job")==0)
+         {
+             SendPM(thisclient, "My class id is: %i ", thisclient->CharInfo->Job);
          }
     }
     else if (strcmp(command, "ann")==0) // *** SEND A ANNUNCEMENT ***
@@ -700,21 +716,21 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
     {
          if(Config.Command_Pak > thisclient->Session->accesslevel || thisclient->CharInfo->IsDev == 0)
 	                    return true;
-         if ((tmp = strtok(NULL, " "))==NULL)
-             return true;
+         if ((tmp = strtok(NULL, " "))==NULL)return true;
+
             char buffer;
-            std::string filename = "packet/packet";
-            filename += tmp;
-            filename += ".txt";
-            FILE *packet1 = fopen(filename.c_str(),"r");
+            std::string fname = "packet/packet";
+            fname += tmp;
+            fname += ".txt";
+            FILE *packet1 = fopen(fname.c_str(),"r");
             if(packet1==NULL)
             {
                 printf("Error opening packet.txt!\n");
                 return true;
             }
-            unsigned int command = 0;
-            fread( &command, 1, 2, packet1 );
-            BEGINPACKET(pak,command);
+            unsigned int comm = 0;
+            fread( &comm, 1, 2, packet1 );
+            BEGINPACKET(pak,comm);
             while((fscanf(packet1,"%c",&buffer))!=EOF)
                     ADDBYTE(pak,buffer);
     		thisclient->client->SendPacket( &pak );
@@ -772,13 +788,25 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
         otherclient->client->SendPacket( &pak );
         Log( MSG_GMACTION, " %s : /exp %i %s" , thisclient->CharInfo->charname, exp, name);
     }
-    else if (strcmp(command, "mon")==0)
+    else if (strcmp(command, "tdmon") == 0)
     {
         if(Config.Command_Mon > thisclient->Session->accesslevel)
-	                    return true;
+	       return true;
+	    unsigned montype = 0;
+        unsigned moncount = 1;
+        unsigned monAI = 331; //TD Mob AI
+        if ((tmp = strtok(NULL, " "))==NULL) return true; montype = atoi(tmp);
+		if ((tmp = strtok(NULL, " "))!=NULL)moncount = atoi(tmp);
+		Log( MSG_GMACTION, " %s : spawned %i TD Mobs of type %i" , thisclient->CharInfo->charname, moncount, montype);
+		return pakGMMon( thisclient, montype, moncount, monAI );
+    }
+    else if (strcmp(command, "mon") == 0)
+    {
+        if(Config.Command_Mon > thisclient->Session->accesslevel)
+	        return true;
         unsigned montype = 0;
         unsigned moncount = 1;
-        unsigned monAI = 0;
+        unsigned monAI = 0; //default AI. Monster gets whatever AI is normal for its type
 		if ((tmp = strtok(NULL, " "))==NULL) return true; montype = atoi(tmp);
 		if ((tmp = strtok(NULL, " "))!=NULL)moncount = atoi(tmp);
 		if ((tmp = strtok(NULL, " "))!=NULL)monAI = atoi(tmp);
@@ -810,7 +838,7 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
     {
          if(Config.Command_Job > thisclient->Session->accesslevel)
 	       return true;
-               char* tmp;
+               //char* tmp;
                if ((tmp = strtok(NULL, " "))==NULL) return true; char* job=tmp;
                Log( MSG_GMACTION, " %s : /job %s" , thisclient->CharInfo->charname, job);
                if(thisclient->CharInfo->Job != 0 || thisclient->Stats->Level<10)
@@ -1172,12 +1200,12 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
         if ((tmp = strtok(NULL, " "))==NULL)
             refvar = 0;
         else
-            refvar = atoi(tmp); 
+            refvar = atoi(tmp);
         if ((tmp = strtok(NULL, " "))==NULL)
             refval = 0;
         else
-            refval = atoi(tmp);    
-            
+            refval = atoi(tmp);
+
         GServer->DB->QExecute("INSERT INTO list_special_spawns (map,montype,min,max,respawntime,x,y,radius,agressive,triggerammount,triggermontype,spawntype,areatrigger,lim,spawnk,refvar,refval) VALUES(%i,%i,%i,%i,%i,%f,%f,%i,%i,%i,%i,%i,%i,%i,%i,%i,%i)",
     		thisclient->Position->Map,mobid,0,max,stime,thisclient->Position->current.x,thisclient->Position->current.y,radius,aggro,triggeramount,triggermontype,spawntype,1,lim,spawnk,refvar,refval );
         CSpawnArea* thisspawn = new (nothrow) CSpawnArea;
@@ -1338,7 +1366,10 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
             itemstat = atoi(tmp);
         thisclient->items[slot].stats= itemstat;
         if(itemstat > 300)
+        {
+            thisclient->items[slot].socketed = 1;
             thisclient->items[slot].gem = itemstat;
+        }
         else
             thisclient->items[slot].gem = 0;
         thisclient->items[slot].appraised = true;
@@ -1350,7 +1381,7 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
 	    //ADDWORD( pak, BuildItemRefine(  thisclient->items[slot] ));	// REFINE
 	    //ADDWORD( pak, thisclient->Stats->Move_Speed );	// REFINE 2602
 	    //SendToVisible( &pak,thisclient );
-	    
+
 	    BEGINPACKET( pak,0x7a5 );
 	    ADDWORD( pak, thisclient->clientid );
 	    ADDWORD( pak, slot );
@@ -1630,6 +1661,36 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
 	    SendToVisible( &pak, thisclient );
 	    // Add our Mob to the mobs list
     }
+    else if (strcmp(command,"setxprate")==0)
+    {
+        if(thisclient->Session->accesslevel < 900 || thisclient->CharInfo->IsDev == 0)
+            return true;
+        if ((tmp = strtok(NULL, " "))==NULL)
+            return true;
+        unsigned int newxprate = atoi(tmp);
+        GServer->Config.EXP_RATE = newxprate;
+        Log( MSG_GMACTION, "EXP Rate set to %i" , newxprate);
+    }
+    else if (strcmp(command,"setdroprate")==0)
+    {
+        if(thisclient->Session->accesslevel < 900 || thisclient->CharInfo->IsDev == 0)
+            return true;
+        if ((tmp = strtok(NULL, " "))==NULL)
+            return true;
+        unsigned int newdroprate = atoi(tmp);
+        GServer->Config.DROP_RATE= newdroprate;
+        Log( MSG_GMACTION, "Drop Rate set to %i" , newdroprate);
+    }
+    else if (strcmp(command,"setzulyrate")==0)
+    {
+        if(thisclient->Session->accesslevel < 900 || thisclient->CharInfo->IsDev == 0)
+            return true;
+        if ((tmp = strtok(NULL, " "))==NULL)
+            return true;
+        unsigned int newzulyrate = atoi(tmp);
+        GServer->Config.ZULY_RATE = newzulyrate;
+        Log( MSG_GMACTION, "Zuly Rate set to %i" , newzulyrate);
+    }
     else if (strcmp(command,"delwp")==0)
     {
         if(thisclient->Session->accesslevel < 900 || thisclient->CharInfo->IsDev == 0)
@@ -1657,7 +1718,10 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
     else if (strcmp(command,"setwp")==0)
     {
         if(thisclient->Session->accesslevel < 900 || thisclient->CharInfo->IsDev == 0)
+        {
+            SendPM(thisclient, "Sorry! You do not have access to this command");
             return true;
+        }
         if ((tmp = strtok(NULL, " "))==NULL)
             return true;
         unsigned int wptype = atoi(tmp);
@@ -1769,10 +1833,20 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
         {
             if(GServer->WPList[mapid][j].WPType != 0)
             GServer->DB->QExecute("INSERT INTO list_waypoints (mapid,wpnum,mapx,mapy,wptype) VALUES(%i,%i,%f,%f,%i)",
-	            mapid, j, GServer->WPList[mapid][j].X, GServer->WPList[mapid][j].Y,GServer->WPList[mapid][j].WPType);
+                mapid, j, GServer->WPList[mapid][j].X, GServer->WPList[mapid][j].Y,GServer->WPList[mapid][j].WPType);
         }
         SendPM(thisclient, "The Waypoint list for this map has been saved to the database.");
         return true;
+    }
+    else if (strcmp(command,"checkwp") == 0)
+    {
+        if(thisclient->Session->accesslevel < 900 || thisclient->CharInfo->IsDev == 0)
+            return true;
+        UINT mapid = thisclient->Position->Map;
+        for(unsigned int i=0;i<20;i++)
+        {
+            SendPM(thisclient, "Waypoint %i type is %i",i,GServer->WPList[mapid][i].WPType);
+        }
     }
 	else if (strcmp(command, "shutdown")==0)
 	{
@@ -1792,7 +1866,7 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
         pthread_create( &WorldThread[SHUTDOWN_THREAD], NULL, (void *(__cdecl *)(void *))ShutdownServer, (PVOID)minutes);
         Log( MSG_GMACTION, " %s : /shutdown %u" , thisclient->CharInfo->charname, shutdown);
     }
-    else if(strcmp(command, "dquest")==0)
+    else if(strcmp(command, "dquest")==0)  // toggle quest debug mode
     {
          if(Config.Command_DQuest > thisclient->Session->accesslevel || thisclient->CharInfo->IsDev == 0)
 	                    return true;
@@ -1811,7 +1885,7 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
         }
         return true;
     }
-    else if(strcmp(command, "debugmode")==0)
+    else if(strcmp(command, "debugmode")==0)  //sets the GM into debugmode. PMs will be sent at various parts of the code
     {
         if(thisclient->Session->accesslevel <= 100)
 	                    return true;
@@ -1865,7 +1939,7 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
                     thisclient->quest.quests[i].QuestID = questnum;
                     thisclient->quest.quests[i].StartTime = clock_t();
                 Log( MSG_GMACTION, "quest added %i" , thisclient->quest.quests[i].QuestID);
-                break;;
+
             }
     }
     else if(strcmp(command, "listquest")==0)
@@ -1906,6 +1980,18 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
                     SendPM( thisclient, "flag %i",flagval);
                 }
             }
+        }
+    }
+    else if(strcmp(command, "listqswitch") == 0)
+    {
+        if(Config.Command_IQuest > thisclient->Session->accesslevel || thisclient->CharInfo->IsDev == 0)
+            return true;
+        SendPM( thisclient, "The following quest switches are set: ");
+        char buffer[200];
+        for(unsigned int j=0;j<=5;j++)
+        {
+            sprintf(buffer, "Switch [%i] = %02x ", j, thisclient->quest.quests[0].Switches[j]);
+            SendPM( thisclient, buffer);
         }
     }
     else if(strcmp(command, "listqvar") == 0)
@@ -1954,6 +2040,9 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
         {
             if (thisclient->quest.quests[j].QuestID == 0) continue;
             buffer = "Quest: ";
+            char buf3[5];
+            sprintf(buf3, "%i ",thisclient->quest.quests[j].QuestID);
+            buffer.append(buf3);
             for(dword i = 0; i < 10; i++)
             {
                 char buf2[5];
@@ -1992,6 +2081,9 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
                 if (var >= 10) return true;
                 thisclient->quest.UnionVar[var] = val;
             break;
+            default:
+                return true;
+                break;
         }
         SendPM( thisclient, "Set Var[%i][%i] = %i", vartype, var, val);
     }
@@ -2193,7 +2285,7 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
         }
         return true;
     }
-    
+
     else if(strcmp(command, "who2")==0)
     {
         if(Config.Command_Who2 > thisclient->Session->accesslevel)
@@ -2474,13 +2566,34 @@ bool CWorldServer::pakGMAnn( CPlayer* thisclient, CPacket *P )
 // GM: Spawn x mobs
 bool CWorldServer::pakGMMon( CPlayer* thisclient, int montype, int moncount, int monAI )
 {
-	for (int i=0; i<moncount; i++)
+	CMap* map = MapList.Index[thisclient->Position->Map]; //find current map
+    if(monAI == 331) //it's a TD mob
     {
-        fPoint position = RandInCircle( thisclient->Position->current, 10 );
-        CMap* map = MapList.Index[thisclient->Position->Map];
-        map->AddMonster( montype, position, 0, 0, 1, 0, 0, monAI );
-        SendPM(thisclient,"%i monsters of type %i summoned at position %f %f Map: %i using AI %i",moncount,montype,position.x, position.y,map->id,monAI);
-	}
+        for (int i=0; i<moncount; i++) //add the TD spawns to the Map TDSpawnlist
+        {
+            if(map->TDMobList[map->TDNextMon] == 0)
+            {
+                map->TDMobList[map->TDNextMon] = montype;
+                map->TDNextMon ++;
+                if(map->TDNextMon > 100)map->TDNextMon = 0;
+            }
+            else
+            {
+                SendPM(thisclient,"Sorry! Cannot add monster %i. the TD Spawn list is full",i);
+            }
+        }
+    }
+    else // normal spawn
+    {
+        for (int i=0; i<moncount; i++)
+        {
+            fPoint position = RandInCircle( thisclient->Position->current, 10 );
+            map->AddMonster( montype, position, 0, 0, 1, 0, 0, monAI );
+        }
+        SendPM(thisclient,"%i monsters of type %i summoned in Map: %i using AI %i",moncount,montype,map->id,monAI);
+    }
+    
+
 	return true;
 }
 
@@ -2762,6 +2875,8 @@ bool CWorldServer::pakGMLevel( CPlayer* thisclient, int level, char* name )
                       case 22:
                         otherclient->CharInfo->SkillPoints += 4;
                       break;
+                      default:
+                      break;
                     }
                     // 5 skill points every 4 levels from 22
                     if (s > 22 && s < 99 && ((s - 22) % 4) == 0)
@@ -2797,6 +2912,8 @@ bool CWorldServer::pakGMLevel( CPlayer* thisclient, int level, char* name )
                     case 22:
                         otherclient->CharInfo->SkillPoints += 4;
                     break;
+                    default:
+                      break;
                 }
                 // 5 skill points every 4 levels from 22
                 if (s > 22 && s < 99 && ((s - 22) % 4) == 0)
@@ -2918,7 +3035,7 @@ bool CWorldServer::pakGMInfo(CPlayer* thisclient, char* name)
         return true;
     }
 	char  buffer[200];
-	char* jobname;
+	const char* jobname;
 
 	if(otherclient != 0) {
 		if((otherclient->CharInfo->Job - 0) == 0) { jobname = "Visitor"; }
@@ -2995,22 +3112,27 @@ bool CWorldServer::pakGMFairyto(CPlayer* thisclient, char* name, int mode)
 		thisclient->client->SendPacket(&pak);
         return true;
     }
-    if(mode == 1 && otherclient->Fairy == true){
+    if(mode == 1 && otherclient->Fairy == true)
+    {
         BEGINPACKET(pak, 0x702);
 		ADDSTRING(pak, "User already fairied.");
 		ADDBYTE(pak, 0);
 		thisclient->client->SendPacket(&pak);
         return true;
     }
-    if(!otherclient->Fairy && mode == 1){
+    if(!otherclient->Fairy && mode == 1)
+    {
           int FairyIndex=100;
-          for (int i=0; i<GServer->Config.FairyMax; i++){
-               if (GServer->FairyList.at(i)->assigned == false){
+          for (int i=0; i<GServer->Config.FairyMax; i++)
+          {
+               if (GServer->FairyList.at(i)->assigned == false)
+               {
                    FairyIndex=i;
                    i=GServer->Config.FairyMax;
                }
           }
-          if (FairyIndex == 100){
+          if (FairyIndex == 100)
+          {
               BEGINPACKET(pak, 0x702);
 		      ADDSTRING(pak, "No free Fairy.");
 		      ADDBYTE(pak, 0);
@@ -3022,8 +3144,10 @@ bool CWorldServer::pakGMFairyto(CPlayer* thisclient, char* name, int mode)
 		  ADDBYTE(pak, 0);
 		  thisclient->client->SendPacket(&pak);
           int ListIndex;
-          for (int i=0; i<ClientList.size(); i++){
-              if (GServer->ClientList.at(i)->player == otherclient){
+          for (int i=0; i<ClientList.size(); i++)
+          {
+              if (GServer->ClientList.at(i)->player == otherclient)
+              {
                  ListIndex = i;
                  i = GServer->ClientList.size();
               }
@@ -3167,12 +3291,14 @@ bool CWorldServer::pakGMNpc(CPlayer* thisclient, int npcid,int dialogid)
 	thisnpc->thisnpc = GetNPCDataByID( npcid );
     if( thisnpc->thisnpc == NULL )
     {
+        SendPM(thisclient,"Cannot create NPC");
         delete thisnpc;
         return true;
     }
 	thisnpc->thisnpc->dialogid = dialogid;
 	CMap* map = MapList.Index[thisclient->Position->Map];
 	map->AddNPC( thisnpc );
+	SendPM(thisclient,"NPC type %i added to map %i",npcid,thisnpc->posMap);
 	return true;
 }
 
@@ -3242,7 +3368,7 @@ bool CWorldServer::pakGMDoEmote( CPlayer* thisclient, int emotionid )
 }
 
 // Change GM Stats (Coded by Minoc)
-bool CWorldServer::pakGMStat( CPlayer* thisclient, char* statname, int statvalue )
+bool CWorldServer::pakGMStat( CPlayer* thisclient, const char* statname, int statvalue )
 {
     int statid;
     if (strcmp( statname, "Str" )==0 || strcmp( statname, "str" )==0)
@@ -3679,6 +3805,18 @@ bool CWorldServer::pakGMChangeMonsterDmg(CPlayer* thisclient, int rate)
     thisclient->client->SendPacket(&pak);
 	return true;
 }
+
+//change the mSpeedModif || For test only
+bool CWorldServer::pakGMChangeMSpeedModif(CPlayer* thisclient, int modif)
+{
+    GServer->MOVE_SPEED_MOD = modif;
+    BEGINPACKET (pak, 0x702);
+    ADDSTRING(pak, "mSpeedModif Changed.");
+    ADDBYTE(pak, 0);
+    thisclient->client->SendPacket(&pak);
+	return true;
+}
+
 //change the Cfmode
 bool CWorldServer::pakGMChangeCfmode(CPlayer* thisclient, int mode)
 {

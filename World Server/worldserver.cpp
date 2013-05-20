@@ -861,6 +861,7 @@ void CWorldServer::LoadConfigurations( char* file )
 	Config.WorldPass            = ConfigGetInt    ( file, "worldpass", 123456 );
     if(Config.AUTOSAVE==1)
         Log( MSG_INFO, "Autosaving Every %i minutes", Config.SAVETIME/60 );
+    Config.DeathDelay = 1000;   //delay time in miliseconds.
 
     LoadCommandLevels();
 }

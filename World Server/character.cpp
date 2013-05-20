@@ -145,21 +145,23 @@ void CCharacter::UpdatePosition( )
 	float distance = sqrt( (dx*dx) + (dy*dy) );
 	if(IsPlayer())
 	{
+
         ntime = ( distance / (float(Stats->Move_Speed)/GServer->MOVE_SPEED_MOD)) * CLOCKS_PER_SEC; // calculates clock ticks to target position
+        //Log( MSG_DEBUG, "Dist: %f Speed: %i Mod: %i ntime: %f", distance, Stats->Move_Speed, GServer->MOVE_SPEED_MOD, ntime);
     }
     if(IsMonster())
     {
         ntime = ( distance / (float(Stats->Move_Speed)/GServer->MOVE_SPEED_MOD)) * CLOCKS_PER_SEC; // calculates clock ticks to target position
         Position->current.x = dx*(etime/ntime) + Position->current.x;
     	Position->current.y = dy*(etime/ntime) + Position->current.y;
-    	
+
     }
     //float ntime = ( distance / Stats->Move_Speed * GServer->MOVE_SPEED_MOD ); // lmame method
     /*if(IsPlayer())
     {
         Log(MSG_DEBUG,"ntime = %f distance = %f ",ntime, distance );
     }*/
-    
+
     if(IsOnBattle() && distance <= Stats->Attack_Distance) //this will prevent the character from moving if in battle and in range
     {
         Position->destiny.x = Position->current.x;
@@ -169,10 +171,10 @@ void CCharacter::UpdatePosition( )
     }
 	if (ntime <= etime || distance == 0)
     {
-		//if(IsPlayer())
-		//{
-        //    Log(MSG_DEBUG,"Movement timed out or target reached. Set current to destiny.");
-        //}
+		/*if(IsPlayer())
+		{
+            Log(MSG_DEBUG,"Movement timed out or target reached. Set current to destiny.");
+        }*/
         Position->current.x = Position->destiny.x;
 		Position->current.y = Position->destiny.y;
     }
@@ -180,9 +182,9 @@ void CCharacter::UpdatePosition( )
     {
         if(IsPlayer())
         {
-    		//{
-            //    Log(MSG_DEBUG,"Still moving. Distance to target %f time to target %f", distance, ntime);
-            //}
+    		/*{
+                Log(MSG_DEBUG,"Still moving. Distance to target %f time to target %f", distance, ntime);
+            }*/
             Position->current.x = dx*(etime/ntime) + Position->current.x;
     		Position->current.y = dy*(etime/ntime) + Position->current.y;
         }

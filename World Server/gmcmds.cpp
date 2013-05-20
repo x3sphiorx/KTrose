@@ -2343,6 +2343,13 @@ bool CWorldServer::pakGMCommand( CPlayer* thisclient, CPacket* P )
            return true;
         if ((tmp = strtok(NULL, " "))==NULL) return true;
         char* type = tmp;
+        if(strcmp(type,"death")==0)
+        {
+            if ((tmp = strtok(NULL, " "))==NULL) return true;
+            Config.DeathDelay = atoi(tmp);
+            SendPM(thisclient, "Monster Death Delay has been reset to %i",Config.DeathDelay );
+        }
+        else
         if(strcmp(type,"drop")==0)
         {
             if ((tmp = strtok(NULL, " "))==NULL) return true;
@@ -2592,7 +2599,7 @@ bool CWorldServer::pakGMMon( CPlayer* thisclient, int montype, int moncount, int
         }
         SendPM(thisclient,"%i monsters of type %i summoned in Map: %i using AI %i",moncount,montype,map->id,monAI);
     }
-    
+
 
 	return true;
 }
