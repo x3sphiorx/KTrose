@@ -597,9 +597,9 @@ bool CWorldServer::OnServerReady( )
     }
     DB->QFree( );
     if(pflag)
-    {
-        Log(  MSG_INFO, "Initialized Charserver connection" );
-    	// Connect To LoginServer
+    {*/
+        Log(  MSG_INFO, "Initializing Charserver connection" );
+    	// Connect To CharServer
     	csock = socket( AF_INET, SOCK_STREAM, 0 );
     	if (csock == INVALID_SOCKET)
         {
@@ -610,7 +610,9 @@ bool CWorldServer::OnServerReady( )
        	ain.sin_addr.s_addr	= inet_addr( Config.CharIP );
     	ain.sin_port = htons( Config.CharPort );
     	if ( connect( csock, (SOCKADDR*) &ain, sizeof(ain) ) == SOCKET_ERROR )
-   		Log( MSG_WARNING, "Could not access charserver" );*/
+            Log( MSG_WARNING, "Could not access charserver" );
+        else
+            Log( MSG_INFO, "Connected to charserver" );
 
    		//say hello to char server
     	BEGINPACKET( pak, 0x500 );

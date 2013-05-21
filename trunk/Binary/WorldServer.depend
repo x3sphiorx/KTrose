@@ -1273,3 +1273,123 @@
 
 1369058060 f:\triggersoft\ktrose server svn\trunk\world server\strhashing.h
 
+1369058572 source:f:\triggersoft\ktrose server svn\trunk\world server\mainprocess.cpp
+	"worldserver.h"
+
+1369058067 source:f:\triggersoft\ktrose server svn\trunk\world server\monster.cpp
+	"worldmonster.h"
+
+1369058064 source:f:\triggersoft\ktrose server svn\trunk\world server\monsterevents.cpp
+	"worldmonster.h"
+
+1369058058 source:f:\triggersoft\ktrose server svn\trunk\world server\monsterstats.cpp
+	"worldmonster.h"
+
+1369058063 source:f:\triggersoft\ktrose server svn\trunk\world server\party.cpp
+	"worldserver.h"
+
+1369058063 source:f:\triggersoft\ktrose server svn\trunk\world server\serverfunctions.cpp
+	"worldserver.h"
+
+1369058063 source:f:\triggersoft\ktrose server svn\trunk\world server\worldmonster.cpp
+	"worldmonster.h"
+
+1369058060 source:f:\triggersoft\ktrose server svn\trunk\world server\worldprocess.cpp
+	"worldserver.h"
+
+1369058061 source:f:\triggersoft\ktrose server svn\trunk\world server\aip\aiactions.cpp
+	"../WorldServer.h"
+
+1369058061 source:f:\triggersoft\ktrose server svn\trunk\world server\aip\aiconditions.cpp
+	"../WorldServer.h"
+
+1369058061 source:f:\triggersoft\ktrose server svn\trunk\world server\aip\aip.cpp
+	"../WorldServer.h"
+
+1369058972 source:f:\triggersoft\ktrose server svn\trunk\world server\battle.cpp
+	"character.h"
+	"worldserver.h"
+
+1369058510 source:f:\triggersoft\ktrose server svn\trunk\world server\character.cpp
+	"character.h"
+	"worldserver.h"
+
+1369058064 source:f:\triggersoft\ktrose server svn\trunk\world server\charevent.cpp
+	"character.h"
+
+1369058058 source:f:\triggersoft\ktrose server svn\trunk\world server\charfunctions.cpp
+	"character.h"
+	"worldserver.h"
+
+1369058068 source:f:\triggersoft\ktrose server svn\trunk\world server\charstats.cpp
+	"character.h"
+
+1369058059 source:f:\triggersoft\ktrose server svn\trunk\world server\clan.cpp
+	"worldserver.h"
+
+1369058058 source:f:\triggersoft\ktrose server svn\trunk\world server\extrafunctions.cpp
+	"worldserver.h"
+
+1369058530 source:f:\triggersoft\ktrose server svn\trunk\world server\gmcmds.cpp
+	"worldserver.h"
+
+1369058067 source:f:\triggersoft\ktrose server svn\trunk\world server\itemdata.cpp
+	"datatypes.h"
+
+1369058060 source:f:\triggersoft\ktrose server svn\trunk\world server\main.cpp
+	"worldserver.h"
+
+1369058058 source:f:\triggersoft\ktrose server svn\trunk\world server\mapfunctions.cpp
+	"worldmap.h"
+
+1369058060 source:f:\triggersoft\ktrose server svn\trunk\world server\monsterfunctions.cpp
+	"worldmonster.h"
+
+1369058067 source:f:\triggersoft\ktrose server svn\trunk\world server\partyfunctions.cpp
+	"party.h"
+
+1369058068 source:f:\triggersoft\ktrose server svn\trunk\world server\player.cpp
+	"player.h"
+	"worldserver.h"
+
+1369058060 source:f:\triggersoft\ktrose server svn\trunk\world server\playerdata.cpp
+	"player.h"
+	"worldserver.h"
+
+1369058060 source:f:\triggersoft\ktrose server svn\trunk\world server\playerfunctions.cpp
+	"player.h"
+	"worldserver.h"
+
+1369058059 source:f:\triggersoft\ktrose server svn\trunk\world server\playerquest.cpp
+
+1369058058 source:f:\triggersoft\ktrose server svn\trunk\world server\playerstats.cpp
+	"player.h"
+	"worldserver.h"
+
+1369058064 source:f:\triggersoft\ktrose server svn\trunk\world server\quest\questactions.cpp
+	"../WorldServer.h"
+
+1369058065 source:f:\triggersoft\ktrose server svn\trunk\world server\quest\questconditions.cpp
+	"../WorldServer.h"
+
+1369058064 source:f:\triggersoft\ktrose server svn\trunk\world server\quest\quests.cpp
+	"../WorldServer.h"
+
+1369058063 source:f:\triggersoft\ktrose server svn\trunk\world server\startup.cpp
+	"worldserver.h"
+
+1369058067 source:f:\triggersoft\ktrose server svn\trunk\world server\stbhandler.cpp
+	"worldserver.h"
+
+1369058064 source:f:\triggersoft\ktrose server svn\trunk\world server\strhashing.cpp
+	"worldserver.h"
+
+1369058060 source:f:\triggersoft\ktrose server svn\trunk\world server\worldmap.cpp
+	"worldmap.h"
+
+1369058063 source:f:\triggersoft\ktrose server svn\trunk\world server\worldpackets.cpp
+	"worldserver.h"
+
+1369147615 source:f:\triggersoft\ktrose server svn\trunk\world server\worldserver.cpp
+	"worldserver.h"
+
