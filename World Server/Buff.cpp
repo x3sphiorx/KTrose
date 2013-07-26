@@ -54,12 +54,9 @@ bool CWorldServer::InstantBuff( CSkills* thisskill, CCharacter* character, int E
             {
                 if(character->Stats->HP <= 0) //character is dead
                     return true;
-                //Log(MSG_INFO,"Character %i HP is initially %i", character->clientid, character->Stats->HP);
                 character->Stats->HP += (long int)thisskill->value1[i]; //apparently there is no buff here. // + Evalue - 8;
-                //Log(MSG_INFO,"Character %i healed by %i points",character->clientid, thisskill->value1[i]);
                 if(character->Stats->HP > character->Stats->MaxHP )
                     character->Stats->HP = character->Stats->MaxHP;
-                //Log(MSG_INFO,"Character %i HP is now %i", character->clientid, character->Stats->HP);
                 return true;
             }
         }
