@@ -300,7 +300,7 @@
 #define sExpandStorage 95
 #define sRemodelShop 96
 #define sCartGauge 97
- 
+
 // Status Type
 #define sNone 0
 #define sPoison1 7
@@ -339,7 +339,7 @@
 #define sHPMPRest 40
 #define sHPMPRest2 41
 #define sHPMPRest3 42
- 
+
 #define sHPDown 43
 #define sMaxHPUp2 44
 #define sMaxMPUp2 45
@@ -379,7 +379,7 @@
 #define sFlame6 79
 #define sFlame7 80
 
- 
+
 // Skills - Classes
 #define cVisitor 0
 #define cSoldier 1
@@ -418,7 +418,7 @@
 #define cBourgeoisJob 67
 #define cArtisanJob 68
 #define cSoldierHawker 71
- 
+
 // Skills - Types
 #define tBasic 1
 #define tCraft 2
@@ -441,7 +441,7 @@
 #define tReservation 18
 #define tAbsorb 19
 #define tResurrect 20
- 
+
 // Skills - Targets
 #define tYourself 0
 #define tPartyMember 1
@@ -478,8 +478,8 @@
 //LTB strings
 struct CLTBstring
 {
-    char LTBstring[200]; 
-    char NPCname[50]; 
+    char LTBstring[200];
+    char NPCname[50];
     char QuestNpcName[50];
     char QuestLTB[200];
 };
@@ -602,7 +602,7 @@ struct CBreakData
     UINT Min[20];      //minimum count
     UINT Max[20];      //maximum count
     UINT Chance[20];   //chance for this item
-    UINT MinDis;       //Minimum number of items from the list 
+    UINT MinDis;       //Minimum number of items from the list
     UINT MaxDis;       //Maximun number of items from the list
     UINT ItemCount;    //Count of items in the list
 };
@@ -666,7 +666,7 @@ struct SBasic
 // -----------------------------------------------------------------------------------------
 // A 2d point, for positions
 // -----------------------------------------------------------------------------------------
-struct fPoint 
+struct fPoint
 {
 	float x;
 	float y;
@@ -674,14 +674,14 @@ struct fPoint
 };
 
 // AIP data
-struct CAIPData 
+struct CAIPData
 {
-    char* filename[200];      
-       
+    char* filename[200];
+
 };
 
 // List Mob Data
-struct CNPCData 
+struct CNPCData
 {
     UINT id;
     char name[50];
@@ -882,7 +882,7 @@ struct BSItem {
 // -----------------------------------------------------------------------------------------
 // A typical npc
 // -----------------------------------------------------------------------------------------
-struct CNPC 
+struct CNPC
 {
 	unsigned short clientid;
 	unsigned char posMap;
@@ -931,7 +931,7 @@ struct CNPCTrigger
 // -----------------------------------------------------------------------------------------
 // Skill Data
 // -----------------------------------------------------------------------------------------
-struct CSkills 
+struct CSkills
 {
     UINT id;
     UINT skillid;
@@ -965,15 +965,16 @@ struct CSkills
     UINT value1[3];
     UINT value2[3];
     UINT nbuffs;
+
     unsigned short int aoe;
     UINT aoeradius;
     UINT script;
     UINT svalue1;
-    
+
 };
 
 //LMA: Grade structure.
-struct CGrade 
+struct CGrade
 {
     UINT atk_percent;
     UINT atk_addbonus;
@@ -1076,9 +1077,9 @@ struct CRespawnPoint
 struct CSpawnArea
 {
 	UINT id;
-	UINT type; 
+	UINT type;
     //0 = inactive
-    //1 = normal 
+    //1 = normal
     //2 = cascade monster triggered by specific trigger defined in typeoftrigger
     //3 = cascade to max. As 2 but all possible mobs are spawned up to the spawn maximum
     //4 = minion spawns. i.e. scarabs around a Guardian Tree. don't use a spawn area but spawn around the boss
@@ -1258,7 +1259,7 @@ struct CBreakList
 {
     CBreakData* Index[6000];
     vector<CBreakData*> Data;
-    CBreakData* nullbreak;       
+    CBreakData* nullbreak;
 };
 
 struct CSellList
@@ -1326,7 +1327,7 @@ struct SQuest
     {
 		for(dword i = 0; i < 6; i++)
         {
-			if(Items[i].GetPakHeader() == item->GetPakHeader()) 
+			if(Items[i].GetPakHeader() == item->GetPakHeader())
             {
 				if(btOp == 1)
                 {
@@ -1391,7 +1392,7 @@ struct TowerDef
     fPoint pos;
     float X;
     float Y;
-    UINT WPType;         
+    UINT WPType;
 };
 
 
