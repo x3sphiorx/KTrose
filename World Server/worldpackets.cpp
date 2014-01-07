@@ -230,7 +230,7 @@ bool CWorldServer::pakQuestTrigger( CPlayer* thisclient, CPacket* pak )
   // action 3 = get quest
   // action 4 = unknown
   // action 5 = success
-  
+
   byte slot = pak->GetByte( 1 );
   dword hash = pak->GetDWord( 2 );
 
@@ -2054,9 +2054,9 @@ bool CWorldServer::pakTradeAction ( CPlayer* thisclient, CPacket* P )
 			ADDBYTE( pak, 0 );
 			ADDWORD( pak, thisclient->clientid );
 			ADDBYTE( pak, 0 );
-			otherclient->client->SendPacket( &pak );
-			thisclient->Trade->trade_status=2;
-			otherclient->Trade->trade_status=1;
+			otherclient->client->SendPacket( &pak ); // send the request packet to the other player with action zero
+			thisclient->Trade->trade_status = 2; // requesting trade.
+			otherclient->Trade->trade_status = 1; // other client needs to respond
 			break;
 		case 1:
 			// ACCEPT TRADE
@@ -2064,39 +2064,47 @@ bool CWorldServer::pakTradeAction ( CPlayer* thisclient, CPacket* P )
 			ADDBYTE( pak, 1 );
 			ADDWORD( pak, thisclient->clientid );
 			ADDBYTE( pak, 0 );
-			otherclient->client->SendPacket( &pak );
-			thisclient->Trade->trade_status=3;
-			otherclient->Trade->trade_status=3;
-			for(int i=0; i<11; i++) thisclient->Trade->trade_count[i]=0;
-			for(int i=0; i<10; i++) thisclient->Trade->trade_itemid[i]=0;
-			for(int i=0; i<11; i++) otherclient->Trade->trade_count[i]=0;
-			for(int i=0; i<10; i++) otherclient->Trade->trade_itemid[i]=0;
+			otherclient->client->SendPacket( &pak ); // send a trade accept packet
+			thisclient->Trade->trade_status = 3; // set both trade status bits to 3 (trade window open for both players)
+			otherclient->Trade->trade_status = 3;
+			for(int i=0; i<11; i++) thisclient->Trade->trade_count[i] = 0;
+			for(int i=0; i<10; i++) thisclient->Trade->trade_itemid[i] = 0;
+			for(int i=0; i<11; i++) otherclient->Trade->trade_count[i] = 0;
+			for(int i=0; i<10; i++) otherclient->Trade->trade_itemid[i] = 0;
 			break;
-		case 3:
+        case 2:  // REJECT TRADE
+		case 3:  // CANCEL TRADE
+            // reject and cancel both do the same thing
 			RESETPACKET( pak, 0x7c0 );
 			ADDBYTE( pak, 3 );
 			ADDWORD( pak, thisclient->clientid );
 			ADDBYTE( pak, 0 );
-			otherclient->client->SendPacket( &pak );
-			thisclient->Trade->trade_target=0;
-			otherclient->Trade->trade_target=0;
-			thisclient->Trade->trade_status=0;
-			thisclient->Trade->trade_status=0;
+			otherclient->client->SendPacket( &pak ); // send packet to cancel trade
+			thisclient->Trade->trade_target = 0;  // remove trade targets from both clients.
+			otherclient->Trade->trade_target = 0;
+			thisclient->Trade->trade_status = 0;  // set trade status to 0 for both clients
+			thisclient->Trade->trade_status = 0;
 			break;
 		case 4:
+            // CHECK READY
 			RESETPACKET( pak, 0x7c0 );
 			ADDBYTE( pak, 4 );
 			ADDWORD( pak, thisclient->clientid );
 			ADDBYTE( pak, 0 );
-			otherclient->client->SendPacket( &pak );
-			thisclient->Trade->trade_status=4;
+			otherclient->client->SendPacket( &pak ); // send trade locked packet to other client
+			thisclient->Trade->trade_status = 4;    // set MY OWN trade status to locked
 			break;
+        case 5:
+            // UNCHECK READY
+            // seems we can't do this right now
+            break;
 		case 6:
-			if (thisclient->Trade->trade_status==6)
-				thisclient->Trade->trade_status=4;
+            // TRADE DONE
+			if (thisclient->Trade->trade_status == 6)
+				thisclient->Trade->trade_status = 4;
 			else
-				thisclient->Trade->trade_status=6;
-			if (otherclient->Trade->trade_status==6)
+				thisclient->Trade->trade_status = 6;
+			if (otherclient->Trade->trade_status == 6)
             {
 				RESETPACKET( pak, 0x7c0 );
 				// Complete the trade
@@ -2182,8 +2190,22 @@ bool CWorldServer::pakTradeAction ( CPlayer* thisclient, CPacket* P )
 				otherclient->saveinventory();
 			}
 			break;
-			default:
-                break;
+        case 7:
+            // TRADE BUSY
+            break;
+        case 8:
+            // TRADE TOO FAR
+            break;
+        case 9:
+            // NOT A VALID TARGET
+            break;
+        case 10:
+            // OUT OF INVENTORY
+            break;
+        case 11:
+            //
+        default:
+            break;
 	}
 
 	return true;
