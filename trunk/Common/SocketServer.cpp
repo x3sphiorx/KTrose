@@ -19,6 +19,7 @@
     developed with Main erose/hrose source server + some change from the original eich source
 */
 #include "sockets.h"
+#include <iostream>
 
 // Constructor
 CServerSocket::CServerSocket( )
@@ -44,7 +45,7 @@ CServerSocket::~CServerSocket( )
 bool CServerSocket::StartServer( )
 {
 	//struct sockaddr_in ain;
-
+    int test;
 	sock = socket( AF_INET, SOCK_STREAM, 0 );
 	if (sock == INVALID_SOCKET)
     {
@@ -64,7 +65,10 @@ bool CServerSocket::StartServer( )
 	memset(&(ain.sin_zero), '\0', 8);
 	if ( bind( sock, (const sockaddr*)&ain, sizeof( struct sockaddr ) ) )
     {
+
 		Log( MSG_FATALERROR, "Could not bind socket" );
+		std::cout <<"socket " << sock << std::endl;
+		std::cin >> test;
 		closesocket( sock );
 		sock = INVALID_SOCKET;
 		return false;
