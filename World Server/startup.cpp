@@ -491,7 +491,7 @@ bool CWorldServer::LoadNPCs( )
 		thisnpc->thisnpc->_EntityType = ENTITY_NPC;
 		if( thisnpc->thisnpc == NULL)
 		{
-            
+
             delete thisnpc;
             continue;
         }
@@ -647,7 +647,7 @@ bool CWorldServer::LoadConfig( )
 {
     Log( MSG_INFO, "Loading database config" );
     MYSQL_ROW row;
-    MYSQL_RES *result = DB->QStore("SELECT exp_rate, drop_rate, zuly_rate, blue_chance, stat_chance, slot_chance, refine_chance, rare_refine, kill_on_fail, spawntype, player_damage, monster_damage, player_acc, monster_acc, pvp_acc, skill_damage, dropmultiple, attkmult, skillmult, dropdelay, basedroprate, ktpointrate, movespeedmod  FROM list_config");
+    MYSQL_RES *result = DB->QStore("SELECT exp_rate, drop_rate, zuly_rate, blue_chance, stat_chance, slot_chance, refine_chance, rare_refine, kill_on_fail, spawntype, player_damage, monster_damage, player_acc, monster_acc, pvp_acc, skill_damage, dropmultiple, attkmult, skillmult, dropdelay, basedroprate, ktpointrate, movespeedmod, maxlevel  FROM list_config");
     if(result==NULL)
     {
         DB->QFree( );
@@ -684,6 +684,7 @@ bool CWorldServer::LoadConfig( )
         GServer->Config.BASE_DROP_CHANCE = atoi(row[20]);
         GServer->Config.KTPointRate = atoi(row[21]);
         GServer->MOVE_SPEED_MOD = atoi(row[22]);
+        GServer->Config.MaxLevel = atoi(row[23]);
     }
     DB->QFree( );
     Log( MSG_INFO, "Config Data Loaded" );
@@ -1223,7 +1224,7 @@ bool CWorldServer::LoadZoneData( )
         newzone->TDMobDelay = 1500;
         for(unsigned int j=0;j<=100;j++)
         {
-            newzone->TDMobList[j] = 0;  
+            newzone->TDMobList[j] = 0;
         }
         //end TD stuff
         newzone->MonsterSpawnList.clear();

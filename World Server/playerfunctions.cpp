@@ -36,32 +36,40 @@ bool CPlayer::CheckPlayerLevelUP( )
 {
 	if (CharInfo->Exp >= GetLevelEXP())
     {
-	    CharInfo->Exp -= GetLevelEXP();
+	    CharInfo->Exp -= GetLevelEXP(); //exp is subtracted anyway whether we reached max or not.
+	    //check if max level has been reached
+	    if(Stats->Level >= GServer->Config.MaxLevel)
+	    {
+	        //posibly give extra bonuses here at some point rather than just subtracting exp and returning.
+	        return true; // returning true should show the levelup animation still and also set HP and MP to max
+	    }
 	    Stats->Level++;
 	    Stats->HP = GetMaxHP( );
 	    Stats->MP = GetMaxMP( );
 	    CharInfo->StatPoints += int((Stats->Level*0.8)+10);
-      // Proper skill point distribution for Pre-Evo
-      switch (Stats->Level) {
-        case 10:
-        case 14:
-          CharInfo->SkillPoints += 2;
-        break;
-        case 18:
-          CharInfo->SkillPoints += 3;
-        break;
-        case 22:
-          CharInfo->SkillPoints += 4;
-        break;
-        default:
-        break;
-      }
-      // 5 skill points every 4 levels from 22
-      if (Stats->Level > 22 && Stats->Level < 99 && ((Stats->Level - 22) % 4) == 0)
-        CharInfo->SkillPoints += 5;
-      // 5 skill points every 2 levels from 98
-      if (Stats->Level > 98 && (Stats->Level % 2) == 0)
-        CharInfo->SkillPoints += 5;
+        // Proper skill point distribution for Pre-Evo
+        if(Stats->Level >= 100 && (Stats->Level % 2) == 0)
+        {
+            // 5 skill points every 2 levels from 100
+            CharInfo->SkillPoints += 5;
+        }
+        else if(Stats->Level > 22 && ((Stats->Level - 22) % 4) == 0)
+        {
+            // 5 skill points every 4 levels from 22
+            CharInfo->SkillPoints += 5;
+        }
+        else if(Stats->Level == 22)
+        {
+            CharInfo->SkillPoints += 4;
+        }
+        else if(Stats->Level == 18)
+        {
+            CharInfo->SkillPoints += 3;
+        }
+        else if(Stats->Level == 14 || Stats->Level == 10)
+        {
+            CharInfo->SkillPoints += 2;
+        }
 
 		BEGINPACKET( pak, 0x79e );
 		ADDWORD( pak, clientid );
@@ -894,7 +902,7 @@ CLAN* CPlayer::GetClan( )
 unsigned int CPlayer::GetInt( )
 {
     return Attr->Int + Attr->Eint;
-    
+
 }
 
 // add item [return item slot [0xffff if couldn't add it]]
