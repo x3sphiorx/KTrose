@@ -1,22 +1,22 @@
 /*
     Rose Online Server Emulator
     Copyright (C) 2006,2007 OSRose Team http://osroseon.to.md
-    
+
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
     as published by the Free Software Foundation; either version 2
     of the License, or (at your option) any later version.
-    
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-    
+
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-    developed with Main erose/hrose source server + some change from the original eich source        
+    developed with Main erose/hrose source server + some change from the original eich source
 */
 #include "loginserver.h"
 
@@ -55,7 +55,7 @@ bool CLoginServer::pakUserLogin( CLoginClient* thisclient, CPacket* P )
             Log(MSG_WARNING,"DB Query returned a NULL result");
             return false;
         }
-    	if( mysql_num_rows( result ) == 1 ) 
+    	if( mysql_num_rows( result ) == 1 )
         {
     		row = mysql_fetch_row(result);
     		int res = 0;
@@ -63,14 +63,14 @@ bool CLoginServer::pakUserLogin( CLoginClient* thisclient, CPacket* P )
     		    res = _stricmp( row[1], thisclient->password.c_str() );
     		#else
     		    res = strcasecmp( row[1], thisclient->password.c_str() );
-    		#endif		
-    		if ( res == 0 ) 
+    		#endif
+    		if ( res == 0 )
             {
                 if(atoi(row[3])==1)
                 {   // characters is already logged
                     Log(MSG_WARNING, "Account %s try re-login", thisclient->username.c_str() );
             		ADDBYTE( pak, 4 );
-                	ADDDWORD( pak, 0 );    	
+                	ADDDWORD( pak, 0 );
                 	thisclient->SendPacket( &pak );
             		DB->QFree( );
             		DB->QExecute( "update accounts set login_count=1 WHERE username='%s'", thisclient->username.c_str());
@@ -86,7 +86,7 @@ bool CLoginServer::pakUserLogin( CLoginClient* thisclient, CPacket* P )
                     DB->QFree( );
                     return true;
                 }
-    			if ( thisclient->accesslevel > 0 ) 
+    			if ( thisclient->accesslevel > 0 )
                 {
     				thisclient->userid = atoi(row[0]);
     				thisclient->isLoggedIn = true;
@@ -97,7 +97,7 @@ bool CLoginServer::pakUserLogin( CLoginClient* thisclient, CPacket* P )
     				ADDBYTE( pak, 0 );
     				result = DB->QStore( "SELECT id,name FROM channels WHERE owner=0" );
                     if(result==NULL) return false;
-    				while( row = mysql_fetch_row(result) ) 
+    				while( row = mysql_fetch_row(result) )
                     {
                         if (Config.Testserver){ADDBYTE( pak, 63 + atoi( row[0] ) );}
     					else{
@@ -131,16 +131,16 @@ bool CLoginServer::pakUserLogin( CLoginClient* thisclient, CPacket* P )
             DB->QFree( );
             if(Config.CreateLoginAccount)
             {
-                if(!DB->QExecute("INSERT into accounts (username,password,accesslevel) values ('%s','%s',100)",thisclient->username.c_str(),thisclient->password.c_str()))                            
+                if(!DB->QExecute("INSERT into accounts (username,password,accesslevel) values ('%s','%s',100)",thisclient->username.c_str(),thisclient->password.c_str()))
                    return true;
-                Log( MSG_INFO, "New Account created '%s'", thisclient->username.c_str() );       
+                Log( MSG_INFO, "New Account created '%s'", thisclient->username.c_str() );
             }
     		//BAD USERNAME
     		ADDBYTE( pak, 2 );
-    		ADDDWORD( pak, 0 );	
+    		ADDDWORD( pak, 0 );
     	}
     /*
-    1 - general error   | 4 - your account is already logged 
+    1 - general error   | 4 - your account is already logged
     6 - topup account   | 7 - cannot connect to server please try again
     8 - server exceeded | 9 - account have not been verified
     10 - login failed   | 11 - ip capacity is full
@@ -152,7 +152,7 @@ bool CLoginServer::pakUserLogin( CLoginClient* thisclient, CPacket* P )
     {
         Log(MSG_ERROR, "Error in pakUserLogin");
     }
-              
+
 }
 
 // Send server list
@@ -160,7 +160,7 @@ bool CLoginServer::pakGetServers( CLoginClient* thisclient, CPacket* P )
 {
      try
      {
-    	if( !thisclient->isLoggedIn ) return false;	
+    	if( !thisclient->isLoggedIn ) return false;
     	MYSQL_ROW row;
     	unsigned servernum = GETDWORD( (*P), 0 );
     	MYSQL_RES *result = DB->QStore( "SELECT id,name,connected,maxconnections FROM channels WHERE owner=%i", servernum );
@@ -168,7 +168,7 @@ bool CLoginServer::pakGetServers( CLoginClient* thisclient, CPacket* P )
     	BEGINPACKET( pak, 0x704 );
     	ADDDWORD   ( pak, servernum );
     	ADDBYTE    ( pak, (BYTE)mysql_num_rows( result ) ); //old function
-    	while(row = mysql_fetch_row(result)) 
+    	while(row = mysql_fetch_row(result))
         {
         	UINT connected = atoi(row[2]);
         	UINT maxconnections = atoi(row[3]);
@@ -197,19 +197,19 @@ bool CLoginServer::pakGetIP( CLoginClient* thisclient, CPacket* P )
      try
      {
     	if (!thisclient->isLoggedIn) return false;
-    	
+
     	MYSQL_ROW row;
 
     	DWORD servernum = GETDWORD( (*P), 0 );
     	BYTE channelnum = GETBYTE( (*P), 4 );
 
-    
+
     	BEGINPACKET( pak, 0x70a );
-    
+
     	if(!DB->QExecute( "UPDATE accounts SET lastsvr=%i,lastip='%s' WHERE id=%i", channelnum, inet_ntoa( thisclient->clientinfo.sin_addr ), thisclient->userid))
     	   return false;
     	MYSQL_RES *result = DB->QStore( "SELECT host,port,connected,maxconnections FROM channels WHERE id=%i", servernum );
-        if(result==NULL) return false;	
+        if(result==NULL) return false;
     	if(mysql_num_rows(result)!=1)
     	{
             Log(MSG_WARNING, "Player selected a invalid channel or channel offline" );
@@ -219,7 +219,9 @@ bool CLoginServer::pakGetIP( CLoginClient* thisclient, CPacket* P )
     	row = mysql_fetch_row(result);
     	UINT connected = atoi(row[2]);
     	UINT maxconnections = atoi(row[3]);
-    	
+
+    	Log(MSG_DEBUG, "IP from database. Sent to client: %s ",row[0] );
+
     	ADDBYTE( pak, 0 ); //atoi(row[0]) ); // What is status? It's NULL in tables - Drakia
     	ADDDWORD( pak, thisclient->userid );
     	ADDDWORD( pak, 0x87654321 );
