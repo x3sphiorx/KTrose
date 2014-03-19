@@ -359,22 +359,21 @@ void CCharacter::NormalAttack( CCharacter* Enemy )
 
     if(Enemy->IsDead())
     {
-      CDrop* thisdrop = NULL;
-      ADDWORD ( pak, (hitpower |   (    critical?0xb000:0x8000   )    ));
-      if(!Enemy->IsSummon( ) && !Enemy->IsPlayer( ))
-      {
-
-        int thisdroprate = Stats->itemdroprate + GServer->Config.DROP_RATE;
-        //Log(MSG_DEBUG,"Monster killed. calling drops function %i times",thisdroprate);
-        for(int j=0;j<thisdroprate;j++)
+        CDrop* thisdrop = NULL;
+        ADDWORD ( pak, (hitpower |   (    critical?0xb000:0x8000   )    ));
+        if(!Enemy->IsSummon( ) && !Enemy->IsPlayer( ))
         {
-          thisdrop = Enemy->GetDrop( );
-          if(thisdrop != NULL)
-          {
-            CMap* map = GServer->MapList.Index[thisdrop->posMap];
-            map->AddDrop( thisdrop );
+            int thisdroprate = Stats->itemdroprate + GServer->Config.DROP_RATE;
+            //Log(MSG_DEBUG,"Monster killed. calling drops function %i times",thisdroprate);
+            for(int j=0;j<thisdroprate;j++)
+            {
+                thisdrop = Enemy->GetDrop( );
+                if(thisdrop != NULL)
+                {
+                    CMap* map = GServer->MapList.Index[thisdrop->posMap];
+                    map->AddDrop( thisdrop );
+                }
             }
-          }
         }
         GServer->SendToVisible( &pak, Enemy );
         ClearBattle(Battle);
@@ -798,17 +797,17 @@ void CCharacter::UseAtkSkill( CCharacter* Enemy, CSkills* skill, bool deBuff)
         ADDDWORD   ( pak, 16 );
         if(!Enemy->IsSummon( ) && !Enemy->IsPlayer( ))
         {
-          //Log(MSG_DEBUG,"Monster killed. calling drops function %i times",Stats->itemdroprate);
-          int thisdroprate = Stats->itemdroprate + GServer->Config.DROP_RATE;
-          for(int j=0;j<thisdroprate;j++)
-          {
-            thisdrop = Enemy->GetDrop( );
-            if(thisdrop != NULL)
+            //Log(MSG_DEBUG,"Monster killed. calling drops function %i times",Stats->itemdroprate);
+            int thisdroprate = Stats->itemdroprate + GServer->Config.DROP_RATE;
+            for(int j=0;j<thisdroprate;j++)
             {
-              CMap* map = GServer->MapList.Index[thisdrop->posMap];
-              map->AddDrop( thisdrop );
+                thisdrop = Enemy->GetDrop( );
+                if(thisdrop != NULL)
+                {
+                    CMap* map = GServer->MapList.Index[thisdrop->posMap];
+                    map->AddDrop( thisdrop );
+                }
             }
-          }
         }
 
         CMonster* monster = reinterpret_cast<CMonster*>(Enemy);

@@ -222,7 +222,7 @@ PVOID MapProcess( PVOID TS )
                         if(clock() - monster->DeathDelayTimer > GServer->Config.DeathDelay)
                         {
                             //Log(MSG_DEBUG,"Found dead monster montype %i",monster->montype);
-                            monster->OnDie( );  //give exp
+                            monster->OnDie( );  //all this does is give exp
                             //Log(MSG_DEBUG,"back from giving exp");
                             monster->DoAi(monster->monAI, 5);
                             //Log(MSG_DEBUG,"ran AI");

@@ -125,9 +125,9 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
     monster->Stats->MP = monster->Stats->MaxMP;
     monster->thisnpc->_EntityType = ENTITY_MONSTER;
     monster->Status->Stance = 0;            // WTF is Status->Stance even used for????
-    monster->Stats->stance = 0;           //mWalking
+    monster->Stats->stance = 0;             //mWalking
     monster->Status->spawnid = spawnid;     //this way we can easily find which spawn a mob belongs to
-    monster->SetStats( );   
+    monster->SetStats( );
     if(AI != 0 && monster->monAI != 999)
     {
         //Set monster's AI to the defined value
@@ -289,7 +289,7 @@ bool CMap::DeleteMonster( CMonster* monster, bool clearobject, UINT i )
     }
     for(UINT j=0;j<MonsterList.size();j++)
     {
-        
+
         CMonster* othermon = MonsterList.at(j);
         if(othermon == monster)
         {
