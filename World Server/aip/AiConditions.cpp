@@ -787,24 +787,6 @@ AICOND(020)
 	//4 = HP
 	//5 = Charm
 	GETAICONDDATA(020);
-
-	//LMA: in some occasions, the monster tests itselfs (when it's ==).
-	if(data->btOp==0)
-	{
-	    int value = AI_GetAbility(entity, data->btAbType);
-
-	    //LMA: TODO: test, special cases for hatchling...
-	    if (entity->char_montype==662)
-	    {
-	        value=100;
-	    }
-
-	    Log(MSG_WARNING,"AIC4:: %i %i %i, value %i",data->btOp,data->btAbType, data->iValue,value);
-	    if(value < 0) return AI_FAILURE;
-	    if(OperateValues<int>(data->btOp, &value, data->iValue)) return AI_SUCCESS;
-	    return AI_SUCCESS;
-	}
-
 	CCharacter* target = NULL;
 	target = entity->GetCharTarget( );
 	if(target == NULL)
@@ -833,27 +815,7 @@ AICOND(021)
     //CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
     //CWorldEntity* caller = thisMonster->thisZone->GetEntity(thisMonster->_CallerID);
 	if(thisMonster->owner == 0) return AI_SUCCESS;
-	//Log(MSG_DEBUG, "AICOND(021) Yes I am an orphan");
-	//LMA: checking if the player is in the same map (should handle warp and if player died).
-	CMap* map = GServer->MapList.Index[thisMonster->Position->Map];
-    CCharacter* caller = map->GetCharInMap( thisMonster->owner );
-	if(caller == NULL)
-	{
-        thisMonster->owner = 0;
-        return AI_SUCCESS;
-	}
-	else
-	{
-	    if (caller->IsDead())
-	    {
-	        thisMonster->owner = 0;
-            return AI_SUCCESS;
-	    }
-
-	}
-
-
-    LogDebug( "AICOND(021) Yes I have a caller");
+    //Log(MSG_DEBUG, "AICOND(021) Yes I am an orphan");
 	return AI_FAILURE;
 }
 
@@ -872,93 +834,10 @@ AICOND(022)
 	if(caller == NULL) return AI_FAILURE;
     //Log(MSG_DEBUG, "AICOND(022 2)");
 	CCharacter* target = map->GetCharInMap(caller->Battle->target);
-	if(target == NULL||target == entity) return AI_FAILURE;
-
-	//LMA: Summon won't attack his master :) would be bad ^_^
-	//monster can't attack another summon if it belongs to the same player.
-	//monster can't attack allies.
-	if (entity->IsSummon()&&caller->IsPlayer())
-	{
-	    if((thisMonster->owner==target->clientid)||(thisMonster->owner==target->char_owner))
-	    {
-	        return AI_FAILURE;
-	    }
-
-	    //LMA: non pvp map...
-	    if (map->allowpvp==0&&(!target->IsMonster()))
-	    {
-	        return AI_FAILURE;
-	    }
-
-	    //LMA: pvp map...
-	    if(map->allowpvp!=0)
-	    {
-	        if (target->IsMonster())
-	        {
-	            //Do they have the same team ID?
-	            CMonster* thisTarget = reinterpret_cast<CMonster*>(target);
-	            if(thisMonster->team==thisTarget->team)
-	            {
-	                Log(MSG_INFO,"Monster %i is friend to monster %i (same team %i)",thisMonster->montype,thisTarget->montype,thisMonster->team);
-	                return AI_FAILURE;
-	            }
-
-	        }
-	        else if (target->IsPlayer())
-	        {
-	            //Are they on the same team?
-	            CPlayer* thisTarget = reinterpret_cast<CPlayer*>(target);
-	            CPlayer* thisPlayer = reinterpret_cast<CPlayer*>(caller);
-	            if(thisMonster->team==thisTarget->pvp_id)
-	            {
-	                Log(MSG_INFO,"Monster %i is friend to %s (same team %i as caller %s)",thisMonster->montype,thisTarget->CharInfo->charname,thisMonster->team,thisPlayer->CharInfo->charname);
-	                return AI_FAILURE;
-	            }
-
-	            //in the same party?
-	            if (thisTarget->Party->party!=NULL&&thisPlayer->Party->party!=NULL)
-	            {
-	                if(thisTarget->Party->party==thisPlayer->Party->party)
-	                {
-	                    Log(MSG_INFO,"Monster %i is friend to %s (in party with caller %s)",thisMonster->montype,thisTarget->CharInfo->charname,thisPlayer->CharInfo->charname);
-	                    return AI_FAILURE;
-	                }
-
-	            }
-
-
-	        }
-	        else
-	        {
-	            Log(MSG_WARNING,"Weird case, target is something else, chartype %i",target->CharType);
-	            return AI_FAILURE;
-	        }
-
-	    }
-
-	    Log(MSG_INFO,"Monster %i sees caller's master target",thisMonster->montype);
-	}
-	else if(!entity->IsSummon()&&caller->IsMonster())
-	{
-	    //LMA: some monsters have a monster as a master (mini warbiz for example).
-	    if (target->IsMonster())
-	    {
-	        Log(MSG_INFO,"A monster can't target a monster");
-	        return AI_FAILURE;
-	    }
-
-	    Log(MSG_INFO,"Monster %i sees monster's master target",thisMonster->montype);
-	}
-	else
-	{
-	    Log(MSG_WARNING,"AIP CDT022: Weird case");
-	    return AI_FAILURE;
-	}
-
-    LogDebug( "AICOND(022 3)");
-
-
-	return AI_SUCCESS;
+	if(target == entity) return AI_FAILURE;
+	if(target != NULL) return AI_SUCCESS;
+    //Log(MSG_DEBUG, "AICOND(022 3)");
+	return AI_FAILURE;
 }
 
 //Check Time (3) (Game map time?)
@@ -1159,39 +1038,8 @@ AICOND(029)
 //LMA: Timer since spawn (seconds).
 AICOND(030)
 {
-    GETAICONDDATA(030);
-    CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
-    if(thisMonster==NULL)
-    {
-        return AI_FAILURE;
-    }
-
-    if(thisMonster->IsSummon()&&thisMonster->life_time!=data->Timer)
-    {
-        thisMonster->life_time=data->Timer;
-        //Log(MSG_INFO,"Setting life time for monster %i to %u",thisMonster->montype,thisMonster->life_time);
-    }
-
-    clock_t diff_time=clock()-thisMonster->SpawnTime;
-
-    if(diff_time>=(data->Timer*CLOCKS_PER_SEC))
-    {
-        LogDebug("AIC030:: timer ok %u>=%u",diff_time,data->Timer*CLOCKS_PER_SEC);
-        return AI_SUCCESS;
-    }
-    else
-    {
-        LogDebug("AIC030:: timer NOT ok %u<%u",diff_time,data->Timer*CLOCKS_PER_SEC);
-    }
-
-
 	return AI_FAILURE;
 }
-
-
-
-
-
 
 //from here on this is 100% server sided. AIP scripts with these elements in should not be uploaded to the client
 
