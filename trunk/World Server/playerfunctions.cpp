@@ -34,8 +34,10 @@ UINT CPlayer::GetLevelEXP( )
 // check if player can level up
 bool CPlayer::CheckPlayerLevelUP( )
 {
+	//if(Session->Respawned == 2){Log( MSG_INFO, "Checking Levelup" );}
 	if (CharInfo->Exp >= GetLevelEXP())
     {
+	    //if(Session->Respawned == 2){Log( MSG_INFO, "XP >= GetLevelXP" );}
 	    CharInfo->Exp -= GetLevelEXP(); //exp is subtracted anyway whether we reached max or not.
 	    //check if max level has been reached
 	    if(Stats->Level >= GServer->Config.MaxLevel)
@@ -87,6 +89,7 @@ bool CPlayer::CheckPlayerLevelUP( )
         //SendLevelUPtoChar(this);
         return true;
 	}
+	//if(Session->Respawned == 2){Log( MSG_INFO, "XP < GetLevelXP" );}
 	return false;
 }
 

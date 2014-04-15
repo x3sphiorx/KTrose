@@ -283,6 +283,9 @@ bool CWorldServer::pakDoIdentify( CPlayer *thisclient, CPacket *P )
 	thisclient->Session->logtime = atoi(row[6]);        //current log time in hours.
 	thisclient->Session->TotalLogTime = atoi(row[7]);   //total log time for this account
 	thisclient->Session->award = 0;
+	thisclient->Session->RespawnChoice = 0;
+	thisclient->Session->Respawned = 0;
+	thisclient->Session->inGame = true;
     DB->QFree( );
     if(thisclient->Session->NewPoints != 0)
 	{
@@ -347,6 +350,7 @@ bool CWorldServer::pakDoIdentify( CPlayer *thisclient, CPacket *P )
 
 }
 
+
 //  Give the user an ID
 bool CWorldServer::pakDoID( CPlayer* thisclient, CPacket* P )
 {
@@ -358,6 +362,8 @@ bool CWorldServer::pakDoID( CPlayer* thisclient, CPacket* P )
 		return false;
 	}
 	Log( MSG_INFO, "User '%s'(#%i) assigned id #%i", thisclient->Session->username, thisclient->Session->userid, thisclient->clientid );
+    //Log( MSG_DEBUG, "User Session Ingame = %i", thisclient->Session->inGame);
+    //thisclient->Session->inGame = true;
     if( thisclient->Party->party )
     {
         BEGINPACKET( pak, 0x7d5 );
@@ -375,13 +381,18 @@ bool CWorldServer::pakDoID( CPlayer* thisclient, CPacket* P )
     ADDWORD    ( pak, 0x0002 );
     ADDWORD    ( pak, 0x0000 );
     thisclient->client->SendPacket( &pak );
-
+    //Log( MSG_DEBUG, "Packet 0x721 sent");
     RESETPACKET( pak, 0x753 );
     ADDWORD    ( pak, thisclient->clientid );			// USER ID
+    //Log( MSG_DEBUG, "User ID added");
     ADDWORD    ( pak, thisclient->Stats->HP );		// CURRENT HP
+    //Log( MSG_DEBUG, "Current HP added");
     ADDWORD    ( pak, thisclient->Stats->MP );		// CURRENT MP
+    //Log( MSG_DEBUG, "Current MP added");
     ADDDWORD   ( pak, thisclient->CharInfo->Exp );				// CURRENT EXP
     ADDDWORD   ( pak, 0x00000000 );						// LVL EXP (UNSUSED)
+    //Log( MSG_DEBUG, "Current XP added");
+    //Log( MSG_DEBUG, "Basic info added");
     // thanks to StrikeX to post this source
         //[economy]
         /*
@@ -410,7 +421,9 @@ bool CWorldServer::pakDoID( CPlayer* thisclient, CPacket* P )
     ADDDWORD   ( pak, 0x3232cd50 );
     ADDDWORD   ( pak, 0x32323235 );
     ADDDWORD   ( pak, 0x35323232 );
+    //Log( MSG_DEBUG, "rates added");
     CMap* map = MapList.Index[thisclient->Position->Map];
+    //Log( MSG_DEBUG, "position added");
     if(map->allowpvp!=0)
         ADDWORD(pak, 0x0001)//player vs player map
     else
@@ -436,6 +449,7 @@ bool CWorldServer::pakDoID( CPlayer* thisclient, CPacket* P )
         ADDWORD(pak, 0x0000 );//white icon (map)
     }
     thisclient->client->SendPacket( &pak );
+    //Log( MSG_DEBUG, "Sent 0x753 packet");
     // Sort out weight stuff, make user not able to run if overweight
     int weight = ( thisclient->GetCurrentWeight() / thisclient->GetMaxWeight() ) * 100;
     if(weight>110)
@@ -460,6 +474,8 @@ bool CWorldServer::pakDoID( CPlayer* thisclient, CPacket* P )
 	SendToVisible( &pak, thisclient );
     thisclient->CleanPlayerVector( );
 	thisclient->Session->inGame = true;
+	thisclient->Session->Respawned = 0;
+	//Log( MSG_DEBUG, "Completed DoID");
 	return true;
 }
 
@@ -1230,6 +1246,7 @@ bool CWorldServer::pakGate( CPlayer* thisclient, CPacket* P )
     MapList.Index[map]->TeleportPlayer( thisclient, position );
     thisclient->saveinventory();
     thisclient->quicksave();
+    thisclient->Session->inGame = true;
 	return true;
 }
 
@@ -1354,7 +1371,15 @@ bool CWorldServer::pakGameGuard ( CPlayer* thisclient, CPacket* P )
 bool CWorldServer::pakUserDied ( CPlayer* thisclient, CPacket* P )
 {
     thisclient->Session->inGame = false;
-    BYTE respawn = GETBYTE((*P),0);
+    thisclient->Session->Respawned = 1;
+    //BYTE respawn = GETBYTE((*P),0);
+    thisclient->Session->RespawnChoice = GETBYTE((*P),0);
+
+    //PY lets try moving all this stuff into the main loop because we are currently outside of the player mutex
+    //It's all in pakRespawned now.
+    //thisclient->Session->inGame is just used as a toggle trigger now
+
+    /*
     Log( MSG_INFO, "RespawnZones choise: %i", respawn );
     //1 - Current / 2 - save point/dungeon entrance
     CMap* map = MapList.Index[thisclient->Position->Map];
@@ -1391,7 +1416,8 @@ bool CWorldServer::pakUserDied ( CPlayer* thisclient, CPacket* P )
 	for(unsigned int i=0;i<30;i++)
 	{	// Clean Buffs
         thisclient->MagicStatus[i].Duration = 0;
-    }
+    }*/
+
 	return true;
 }
 // User Save Town

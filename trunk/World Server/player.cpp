@@ -227,6 +227,50 @@ bool CPlayer::UpdateValues( )
     return true;
 }
 
+bool CPlayer::RespawnPlayer(  CPlayer* thisclient )
+{
+    CMap* map = GServer->MapList.Index[thisclient->Position->Map];
+    CRespawnPoint* thisrespawn = NULL;
+    thisclient->Stats->HP = thisclient->Stats->MaxHP * 10 / 100;
+    byte respawn = thisclient->Session->RespawnChoice;
+    Log( MSG_INFO, "RespawnZones choice: %i", respawn );
+    //1 - Current / 2 - save point/dungeon entrance
+    if(respawn == 1 || map->dungeon)
+    {
+        if (respawn != 1) // This is a dungeon map, spawn at start
+            thisrespawn = map->GetStartRespawn( );
+        else
+            thisrespawn = map->GetNearRespawn( thisclient );
+         if(thisrespawn!=NULL)
+         {
+            map->TeleportPlayer( thisclient, thisrespawn->dest, false );
+         }
+    }
+    else  // This is a field, spawn in save town
+    {
+        thisrespawn = GServer->GetRespawnByMap( thisclient->Position->saved );
+        if(thisrespawn != NULL)
+        {
+            fPoint coord = thisrespawn->dest;
+            GServer->MapList.Index[thisclient->Position->saved]->TeleportPlayer( thisclient, coord, false );
+        }
+    }
+
+    if(thisrespawn == NULL)
+    {
+        fPoint coord;
+        coord.x = 5200;
+        coord.y = 5200;
+        GServer->MapList.Index[2]->TeleportPlayer( thisclient, coord, false );
+    }
+    Log( MSG_INFO, "Player teleported successfully" );
+	for(unsigned int i=0;i<30;i++)
+	{	// Clean Buffs
+        thisclient->MagicStatus[i].Duration = 0;
+    }
+    Log( MSG_INFO, "Buffs Cleaned" );
+    return true;
+}
 
 // Spawn Another User on the Screen
 bool CPlayer::SpawnToPlayer(  CPlayer* player, CPlayer* otherclient )
