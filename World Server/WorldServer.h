@@ -227,6 +227,7 @@ class CWorldServer : public CServerSocket
     	bool pakDoDrop( CPlayer* thisclient, CPacket* P );
     	bool pakShout( CPlayer* thisclient, CPacket* P );
     	bool pakCraft( CPlayer* thisclient, CPacket* P );
+    	bool pakRespawn( CPlayer* thisclient, CPacket* P );
     	bool pakDoID( CPlayer* thisclient, CPacket* P );
     	bool pakGate( CPlayer* thisclient, CPacket* P );
     	bool pakExit( CPlayer* thisclient, CPacket* P );

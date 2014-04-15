@@ -1,22 +1,22 @@
 /*
     Rose Online Server Emulator
     Copyright (C) 2006,2007 OSRose Team http://www.osrose.net
-    
+
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
     as published by the Free Software Foundation; either version 2
     of the License, or (at your option) any later version.
-    
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-    
+
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-    depeloped with Main erose/hrose source server + some change from the original eich source        
+    depeloped with Main erose/hrose source server + some change from the original eich source
 */
 #ifndef _ROSE_PLAYER_
 #define _ROSE_PLAYER_
@@ -24,23 +24,23 @@
 
 class CPlayer: public CCharacter
 {
-    
+
     public:
         CPlayer( CClientSocket* );
         ~CPlayer( );
-    
+
     //
     CClientSocket* client;
     bool questdebug;// Send PM's with quest information
     bool Saved;// already save this player?(used ondisconnect/returnchar)
-    bool isInvisibleMode;    	
-    
+    bool isInvisibleMode;
+
     // Fairy
     bool Fairy;
     UINT FairyListIndex;
-            
+
     // variables
-    USEDITEM* UsedItem; 
+    USEDITEM* UsedItem;
     INFO* CharInfo;
     RIDE* Ride;
     TRADE* Trade;
@@ -51,22 +51,22 @@ class CPlayer: public CCharacter
     UNION_s* Union_s;
     ATTRIBUTES* Attr;
     CRespawnPoints GMRespawnPoints;
-    
+
     // Inventory/storage
-    CItem storageitems[MAX_STORAGE];    
-    unsigned int nstorageitems;		
-    CItem items[MAX_INVENTORY];    
-    
+    CItem storageitems[MAX_STORAGE];
+    unsigned int nstorageitems;
+    CItem items[MAX_INVENTORY];
+
     // skills/quickbar
     SKILLS cskills[MAX_SKILL];
-    UINT bskills[MAX_BASICSKILL];			
+    UINT bskills[MAX_BASICSKILL];
     UINT quickbar[MAX_QUICKBAR];
    	unsigned short askill[30];
 	unsigned char  askilllvl[30];
 	unsigned short pskill[30];
 	unsigned char  pskilllvl[30];
-    int p_skills;    
-    
+    int p_skills;
+
     // ExJam Quest Code - Info
     DWORD ActiveQuest;  //active quest #
     int CheckQuest; // The currently checked quest.
@@ -77,32 +77,32 @@ class CPlayer: public CCharacter
 
     // Time
 	clock_t lastRegenTime;
-	clock_t lastSaveTime;	
-	clock_t lastGG;	
-	
+	clock_t lastSaveTime;
+	clock_t lastGG;
+
 	// Visible Lists
     vector<CPlayer*>	        VisiblePlayers;	   // Visible players
     vector<CDrop*>		        VisibleDrops;	   // Visible drops
     vector<unsigned int>		    VisibleMonsters;   // Visible monsters
     vector<CNPC*>			    VisibleNPCs;	   // Visible npcs
-    
+
     // Functions
         bool CheckPlayerLevelUP( );
         bool canUseSkill(CSkills* skill);
         void SetStats( );
-        bool GetPlayerInfo( ); 
+        bool GetPlayerInfo( );
         bool IsMonster( );
         bool CleanPlayerVector( );
        	bool loaddata( );
-        void savedata( ); 
+        void savedata( );
         void quicksave( );
         void saveinventory( );
         void loadinventory( );
         void savestorage( );
         void SaveBackupStorage( int logstate );
-        void loadstorage( );  
+        void loadstorage( );
         UINT GetNewStorageItemSlot( CItem thisitem );
-        UINT GetNewItemSlot( CItem thisitem );        
+        UINT GetNewItemSlot( CItem thisitem );
         bool ClearObject( unsigned int otherclientid );
         void RestartPlayerVal( );
         bool Regeneration( );
@@ -110,6 +110,7 @@ class CPlayer: public CCharacter
         bool VisiblityList( );
         bool ChangeDialog( unsigned int npc, unsigned int dialog, unsigned int eventid = 0 );
         bool SpawnToPlayer( CPlayer* player, CPlayer* otherclient );
+        bool RespawnPlayer(CPlayer* thisclient);
         bool UpdateValues( );
         void ReduceABC( );
         CParty* GetParty( );
@@ -117,7 +118,7 @@ class CPlayer: public CCharacter
         unsigned int AddItem( CItem item );
         unsigned int Getnstorageitems( CPlayer* thisclient );
         void UpdateInventory(unsigned int slot1, unsigned int slot2=0xffff );
-        
+
         // ExJam Quest Code
         void savequests( CPlayer* thisclient );
         SQuest* GetActiveQuest( );
@@ -127,8 +128,8 @@ class CPlayer: public CCharacter
         //PY Quest stuff
         void SetQuestFlag(dword flagid, bool value);
         void GetQuestFlag(dword falgid);
-             
-        
+
+
     	// Player Stats
         unsigned int GetAttackPower( );
         unsigned int GetDefense( );
@@ -143,18 +144,18 @@ class CPlayer: public CCharacter
         unsigned int GetMagicAttack( );
         unsigned int GetCritical( );
         unsigned int GetAttackSpeed( );
-        unsigned int GetMoveSpeed( );   
-        unsigned int GetMaxHP( );   
-        unsigned int GetMaxMP( );   
-        float GetAttackDistance( ); 	
+        unsigned int GetMoveSpeed( );
+        unsigned int GetMaxHP( );
+        unsigned int GetMaxMP( );
+        float GetAttackDistance( );
         unsigned int GetHPRegenAmount( );
-        unsigned int GetMPRegenAmount( );        
-        unsigned int GetMaxWeight( );      	
+        unsigned int GetMPRegenAmount( );
+        unsigned int GetMaxWeight( );
       	unsigned int GetCurrentWeight( );
-      	unsigned int GetMPReduction( );        
-        unsigned int GetMaxSummonGauge( );        
-        void GetExtraStats( );      
-        unsigned int GetLevelEXP( );             
+      	unsigned int GetMPReduction( );
+        unsigned int GetMaxSummonGauge( );
+        void GetExtraStats( );
+        unsigned int GetLevelEXP( );
         unsigned int GetInt( );
 		// Skill
 		int GetNewSkillSlot(char skilltype);

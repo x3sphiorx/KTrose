@@ -229,11 +229,13 @@ struct SESSION
 	int accesslevel;
 	bool isLoggedIn;
 	bool inGame;
+	UINT Respawned;
+	BYTE RespawnChoice;
     bool codedebug;
     UINT KTPoints;
     UINT NewPoints;
     UINT logtime; // tracks total log points. 1 point = 1 hour. 5 points = 1KTPoint
-    clock_t LogTime; // time for teh current session
+    clock_t LogTime; // time for the current session
     UINT TotalLogTime;
     UINT award;
 };

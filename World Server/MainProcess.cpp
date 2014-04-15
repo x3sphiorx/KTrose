@@ -43,23 +43,51 @@ PVOID MapProcess( PVOID TS )
                 for(UINT j=0;j<map->PlayerList.size();j++)
                 {
                     CPlayer* player = map->PlayerList.at(j);
-                    if(!player->Session->inGame) continue;
+                    if(!player->Session->inGame && player->Session->Respawned == 1) //only set in pakUserDied on receiving respawn packet 0x753
+                    {
+                        Log( MSG_INFO, "ingame: = %i respawned: = %i",player->Session->inGame,player->Session->Respawned);
+                        if(!player->RespawnPlayer(player)) //so we respawn the player
+                        {
+                            Log( MSG_INFO, "Player not respawned correctly");
+                        }
+                        else
+                        {
+                            Log( MSG_INFO, "Player Respawned" );
+                        }
+                        player->Session->inGame = true;
+                        player->Session->Respawned = 2; //testing toggle
+                    }
                     if(player->IsDead( )) continue;
                     if(player->UpdateValues( )) //checks if player is on a cart. otherwise returns true
+                    {
+                        //if(player->Session->Respawned == 2){Log( MSG_INFO, "Running UpdatePosition" );}
                         player->UpdatePosition( );
+                        //if(player->Session->Respawned == 2){Log( MSG_INFO, "ran UpdatePosition" );}
+                    }
+
                     if(player->IsOnBattle( ))
+                    {
+                        //if(player->Session->Respawned == 2){Log( MSG_INFO, "Player is in battle so call DoAttack" );}
                         player->DoAttack( );
+                        //if(player->Session->Respawned == 2){Log( MSG_INFO, "ran DoAttack" );}
+                    }
                     player->RefreshBuff( );
+                    //if(player->Session->Respawned == 2){Log( MSG_INFO, "ran refreshbuff" );}
                     player->PlayerHeal( );
+                    //if(player->Session->Respawned == 2){Log( MSG_INFO, "ran playerheal" );}
                     player->Regeneration( );
+                    //if(player->Session->Respawned == 2){Log( MSG_INFO, "ran regeneration" );}
                     player->CheckPlayerLevelUP( );
+                    //if(player->Session->Respawned == 2){Log( MSG_INFO, "ran Check Levelup" );}
                     if(3600000 < (UINT)GServer->round((clock( ) - player->Session->LogTime))) //1 hour since login
                     {
+                        //if(player->Session->Respawned == 2){Log( MSG_INFO, "updating logtime stuff" );}
                         player->Session->logtime += 1;
                         player->Session->TotalLogTime ++;
                   		GServer->DB->QExecute("UPDATE accounts SET logtime = %i, totlogtime = %i WHERE id = %i", player->Session->logtime, player->Session->TotalLogTime, player->Session->userid);
                   		player->Session->LogTime = clock();
                     }
+                    //if(player->Session->Respawned == 2){Log( MSG_INFO, "Checking autosave" );}
                     if( GServer->Config.AUTOSAVE == 1 )
                     {
                         clock_t etime = clock() - player->lastSaveTime;
@@ -68,7 +96,9 @@ PVOID MapProcess( PVOID TS )
                             player->savedata( );
                             player->lastSaveTime = clock();
                         }
+                        //if(player->Session->Respawned == 2){Log( MSG_INFO, "saved player data" );}
                     }
+                    //if(player->Session->Respawned == 2){Log( MSG_INFO, "Checking ItemXPTimer" );}
                     if(player->Stats->ItemXPTimer > 0) // does the player have a timed XPRate buff?
                     {
                         clock_t etime = clock() - player->Stats->ItemXPTime;
@@ -77,7 +107,9 @@ PVOID MapProcess( PVOID TS )
                             player->Stats->ItemXPTime = 0;
                             player->Stats->ItemXPRate = 1;
                         }
+                        //if(player->Session->Respawned == 2){Log( MSG_INFO, "set XPRates and stuff" );}
                     }
+                    player->Session->Respawned = 0; //resetting respawned status
                 }
                 // Monster update //------------------------
                 pthread_mutex_lock( &map->MonsterMutex );

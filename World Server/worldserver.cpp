@@ -1010,6 +1010,7 @@ bool CWorldServer::OnReceivePacket( CClientSocket* thisclient, CPacket *P )
     	case 0x070b: return pakDoIdentify       ( (CPlayer*)thisclient->player, P );
     	case 0x071c: return pakCharSelect       ( (CPlayer*)thisclient->player, P );
     	case 0x0730: return pakQuestTrigger     ( (CPlayer*)thisclient->player, P );
+    	//case 0x0753: return pakRespawned        ( (CPlayer*)thisclient->player, P );
     	case 0x0753: return pakDoID             ( (CPlayer*)thisclient->player, P );
     	case 0x0755: return pakUserDied         ( (CPlayer*)thisclient->player, P );
     	case 0x0756: return pakSaveTown         ( (CPlayer*)thisclient->player, P );

@@ -705,7 +705,7 @@ bool CPlayer::loaddata( )
     time(&rtime);
     char *timestamp = ctime(&rtime);
     timestamp[ strlen(timestamp)-1 ] = ' ';
-    Log(MSG_DEBUG,"setting time stamp fo login: %s for userid: %u",timestamp,Session->userid );
+    //Log(MSG_DEBUG,"setting time stamp fo login: %s for userid: %u",timestamp,Session->userid );
     GServer->DB->QExecute("UPDATE accounts SET online=1, lastlogin='%s' where id=%u", timestamp,Session->userid );
     Session->LogTime = clock();
     //Log(MSG_INFO,"set datestamp");
