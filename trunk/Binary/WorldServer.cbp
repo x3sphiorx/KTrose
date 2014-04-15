@@ -17,6 +17,7 @@
 					<Add option="-Wredundant-decls" />
 					<Add option="-Wunreachable-code" />
 					<Add option="-Wswitch-enum" />
+					<Add option="-g" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
