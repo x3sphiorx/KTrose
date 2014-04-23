@@ -105,6 +105,7 @@ bool CMap::RemovePlayer( CPlayer* player, bool clearobject )
 // add a new monster to this map
 CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spawnid , UINT aggro, bool IsTD, UINT limit, UINT AI)
 {
+    //if(AI == 999) Log( MSG_WARNING, "AddMonster Spawning a TD mob" );
     // check if is a valid monster
     CNPCData* thisnpc = GServer->GetNPCDataByID( montype );
     if(thisnpc == NULL)
@@ -112,12 +113,14 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
         Log( MSG_WARNING, "Invalid montype %i", montype );
         return NULL;
     }
+    //if(AI == 999) Log( MSG_WARNING, "AddMonster Cast CNPCData " );
     CMonster* monster = new (nothrow) CMonster( position, montype, this->id, owner, spawnid  );
     if(monster == NULL)
     {
         Log( MSG_WARNING, "Error allocing memory" );
         return NULL;
     }
+    //if(AI == 999) Log( MSG_WARNING, "AddMonster Cast CMonster " );
     monster->thisnpc = thisnpc;
     monster->Stats->MaxHP = monster->GetMaxHP( );
     monster->Stats->HP = monster->Stats->MaxHP;
@@ -128,11 +131,15 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
     monster->Stats->stance = 0;             //mWalking
     monster->Status->spawnid = spawnid;     //this way we can easily find which spawn a mob belongs to
     monster->SetStats( );
+    //if(AI == 999) Log( MSG_WARNING, "AddMonster Stats set " );
     if(AI != 0 && monster->monAI != 999)
     {
         //Set monster's AI to the defined value
+        //if(AI == 999) Log( MSG_WARNING, "AddMonster Setting monAI " );
         monster->monAI = AI;
         CAip* script = NULL;
+        //if(AI == 999) Log( MSG_WARNING, "AddMonster Created CAip script " );
+        if(monster->monAI == 999) AI = 30; //should create an AIP script that does nothing
         for(unsigned j=0; j < GServer->AipList.size(); j++)
         {
             if (GServer->AipList.at(j)->AInumber == AI)
@@ -141,17 +148,28 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
                 break;
             }
         }
+        //if(monster->monAI == 999) Log( MSG_WARNING, "AddMonster finished scanning the AIPList " );
         if(script == NULL && monster->monAI != 999)
         {
-            //Log( MSG_WARNING, "Invalid AI script for monster type %i using AI %i", montype,AI );
+            Log( MSG_WARNING, "Invalid AI script for monster type %i using AI %i", montype,monster->monAI );
             monster->AItimer = 4000;
         }
         else
         {
-            monster->AItimer = script->minTime * 1000; //set AI timer value for this monster
+            //Log( MSG_WARNING, "Setting timer for monster type %i using AI %i", montype,monster->monAI );
+            if(monster->monAI == 999)
+            {
+                monster->AItimer = 4000;
+            }
+            else
+            {
+                monster->AItimer = script->minTime * 1000; //set AI timer value for this monster
+            }
+            //Log( MSG_WARNING, "Set the timer from the script" );
         }
         if (monster->AItimer == 0)
             monster->AItimer = 4000;
+        //Log( MSG_WARNING, "AddMonster end of main clause " );
     }
     else
     {
@@ -177,9 +195,11 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
         }
         if (monster->AItimer == 0)
             monster->AItimer = 4000;
+        //if(AI == 999) Log( MSG_WARNING, "AddMonster end of ELSE clause " );
     }
     if(IsTD)
     {
+
         //monster->thisnpc->AI = 331;
         monster->monAI = 999;
         monster->thisnpc->aggresive = 0;
@@ -212,6 +232,7 @@ CMonster* CMap::AddMonster( UINT montype, fPoint position, UINT owner, UINT spaw
                             ADDWORD    ( pak, 0x8005 );
                             GServer->SendToVisible( &pak, monster);*/
     MonsterList.push_back( monster );
+    if(AI == 999) Log( MSG_WARNING, "Added to monster list " );
     if(spawnid != 0)
     {
         if(GServer->Config.SpawnType == 1)
