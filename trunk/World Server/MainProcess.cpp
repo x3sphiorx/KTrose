@@ -117,14 +117,18 @@ PVOID MapProcess( PVOID TS )
                 unsigned nextmon = map->TDMobList[map->TDNextSpawn];
                 if(nextmon != 0)
                 {
+                    //Log(MSG_DEBUG,"Spawning TD mobs");
                     clock_t etime = clock() - map->lastTDSpawnTime;
                     if(etime >= map->TDMobDelay) // check if elapsed time is greater than spawn delay
                     {
                          //spawn the next monster on the list
-                         //Log(MSG_DEBUG,"Spawning TD mob at position %i in the list for map %i",map->TDNextSpawn, map->id);
+                         //Log(MSG_DEBUG,"Spawning TD mob of type %i at position %i in the list for map %i",nextmon, map->TDNextSpawn, map->id);
                          map->AddMonster(nextmon, GServer->WPList[map->id][1].pos, 0, 0, 0, 1, 0, 999 ); //spawn a TD mob with no AI
+                         //Log(MSG_DEBUG,"Spawned mob in addmonster");
                          map->TDMobList[map->TDNextSpawn] = 0; //clear the spawn
+                         //Log(MSG_DEBUG,"cleared the spawn");
                          map->TDNextSpawn++; //move the pointer
+                         //Log(MSG_DEBUG,"moved the pointer");
                          if(map->TDNextSpawn > 100)map->TDNextSpawn = 0;
                          map->lastTDSpawnTime = clock();
                     }
@@ -194,7 +198,7 @@ PVOID MapProcess( PVOID TS )
                                     //Log( MSG_INFO, "Reached final waypoint");
                                     //monster->Stats->HP = 0;
                                     map->DeleteMonster( monster, true, j );
-                                   // Log( MSG_INFO, "monster successfully deleted");
+                                    //Log( MSG_INFO, "monster successfully deleted");
                                     continue;
                                 }
                                 break;

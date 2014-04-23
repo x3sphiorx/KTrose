@@ -2576,6 +2576,7 @@ bool CWorldServer::pakGMMon( CPlayer* thisclient, int montype, int moncount, int
 	CMap* map = MapList.Index[thisclient->Position->Map]; //find current map
     if(monAI == 331) //it's a TD mob
     {
+        SendPM(thisclient,"%i monsters of type %i summoned in Map: %i ",moncount,montype,map->id);
         for (int i=0; i<moncount; i++) //add the TD spawns to the Map TDSpawnlist
         {
             if(map->TDMobList[map->TDNextMon] == 0)
@@ -2600,7 +2601,7 @@ bool CWorldServer::pakGMMon( CPlayer* thisclient, int montype, int moncount, int
         SendPM(thisclient,"%i monsters of type %i summoned in Map: %i using AI %i",moncount,montype,map->id,monAI);
     }
 
-
+    SendPM(thisclient,"Spawning successful");
 	return true;
 }
 
