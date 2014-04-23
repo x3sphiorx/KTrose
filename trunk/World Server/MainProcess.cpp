@@ -322,7 +322,10 @@ PVOID MapProcess( PVOID TS )
                          if(AIP == GServer->Config.AIWatch)
                              Log(MSG_DEBUG,"NPC AI number %i successfully run",monster->thisnpc->AI);
                          if(monster->IsOnBattle())
+                         {
+                             //Log(MSG_DEBUG,"NPC %i is registered as in battle",monster->thisnpc->id);
                              monster->DoAttack( );
+                         }
                          //map->DeleteMonster(monster);
                          //delete monster;
                          npc->lastAiUpdate = clock();
