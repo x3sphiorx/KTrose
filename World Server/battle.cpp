@@ -32,6 +32,10 @@ void CCharacter::DoAttack( )
     //{
     //    Log(MSG_INFO,"DoAttack Attack type %i selected. Chartype = %i casting = %i",Battle->atktype, CharType, Battle->iscasting);
     //}
+    //if(CharType = 4) //it's an npc
+    //{
+     //   Log(MSG_DEBUG,"NPC battle sequence");
+    //}
     if(Battle->iscasting == 1)
     {
         CCharacter* Enemy = GetCharTarget( );
@@ -112,6 +116,7 @@ void CCharacter::DoAttack( )
             }
         }
     }
+
     CMap* map = GServer->MapList.Index[Position->Map];
     //if(IsPlayer())
     //{
@@ -251,10 +256,9 @@ void CCharacter::DoAttack( )
             CSkills* skill = GServer->GetSkillByID( Battle->skillid );
             if(skill == NULL)
             {
-                //ClearBattle( Battle );
-
                 return;
             }
+            //Log(MSG_DEBUG,"Running AoeBuff. Skill id %i with target %i", skill->id, skill->target);
             AoeBuff( skill );
         }
         break;
@@ -598,7 +602,7 @@ bool CCharacter::AoeSkill( CSkills* skill, CCharacter* Enemy )
 
 bool CCharacter::AoeBuff( CSkills* skill )
 {
-    //Log(MSG_INFO,"BUFF AOE called");
+    //Log(MSG_INFO,"BUFF AOE called with skill target ",skill->target);
     Position->destiny = Position->current;
     //Log(MSG_DEBUG,"(AoeBuff) Destiny set to current position X: %f Y: %f.",Position->current.x,Position->current.y);
     BEGINPACKET( pak, 0x7bb );
@@ -608,6 +612,7 @@ bool CCharacter::AoeBuff( CSkills* skill )
 
     if(CharType != 2) //player || Summon || NPC.  Anything that is not a monster
     {
+        //Log(MSG_INFO,"It's a Player, Summon or NPC");
         for(UINT i=0;i<map->PlayerList.size();i++)
         {
             CPlayer* player = map->PlayerList.at(i);
@@ -640,11 +645,11 @@ bool CCharacter::AoeBuff( CSkills* skill )
                 case 3: //tAlly
                 case 7: //tAllCharacters
                 case 8: //tAllMembers. all characters
-                {
-                     //Log(MSG_INFO,"Applying AOE buff as long as I can find a close enough allied Player");
-                     if(GServer->IsMonInCircle( Position->current,player->Position->current,(float)skill->aoeradius + 1))
+                    {
+                        //Log(MSG_INFO,"Applying AOE buff as long as I can find a close enough allied Player");
+                        if(GServer->IsMonInCircle( Position->current,player->Position->current,(float)skill->aoeradius + 1))
                             UseBuffSkill( (CCharacter*)player, skill );
-                }
+                    }
                 break;
                 case 5: //tHostileCharacter
                 {
@@ -657,12 +662,14 @@ bool CCharacter::AoeBuff( CSkills* skill )
                 }
                 break;
                 default:
+                    //Log(MSG_INFO,"No valid skill target found");
                 break;
             }
         }
     }
     else if (CharType == 2) //monster
     {
+        //Log(MSG_INFO,"It's a monster");
         for(UINT i=0;i<map->MonsterList.size();i++)
         {
             CMonster* monster = map->MonsterList.at(i);
@@ -689,6 +696,7 @@ bool CCharacter::AoeBuff( CSkills* skill )
             }
         }
     }
+
     Stats->MP -= (skill->mp - (skill->mp * Stats->MPReduction / 100));
     if(Stats->MP < 0) Stats->MP = 0;
     //Battle->atktarget = Battle->target;

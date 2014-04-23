@@ -111,13 +111,13 @@ void CCharacter::StartAction( CCharacter* Target, BYTE action, UINT skillid)
 
             if(action == SKILL_ATTACK)
             {
-                Log( MSG_INFO, "case SKILL_ATTACK");
+                //Log( MSG_INFO, "case SKILL_ATTACK");
                 Battle->skilltarget = Target->clientid;
                 Battle->bufftarget = 0;
             }
             else
             {
-                Log( MSG_INFO, "case SKILL_BUFF");
+                //Log( MSG_INFO, "case SKILL_BUFF");
                 Battle->bufftarget = Target->clientid;
                 Battle->skilltarget = 0;
             }
@@ -226,10 +226,16 @@ bool CCharacter:: IsOnBattle( )
 
 bool CCharacter::CanAttack( )
 {
-
+    if(CharType = 4) //it's an npc
+    {
+        //Log(MSG_DEBUG,"NPC battle sequence (CanAttack check)");
+        //always return true for an NPC
+        return true;
+    }
     clock_t etime = clock() - Battle->lastAtkTime;
     if (Stats->Attack_Speed < 1)
     {
+
         Log( MSG_INFO, "weapon with no attackspeed.");
         return false;
     }
