@@ -133,6 +133,8 @@ void CCharacter::StartAction( CCharacter* Target, BYTE action, UINT skillid)
         case BUFF_SELF://Log( MSG_INFO, "case BUFF_SELF");
         case BUFF_AOE:
         {
+
+            //Log( MSG_INFO, "Battle set for skill %i Action = %i", skillid, action);
             //Log( MSG_INFO, "case BUFF_AOE");
             RESETPACKET( pak, 0x7b2);
             ADDWORD    ( pak, clientid );
@@ -226,13 +228,15 @@ bool CCharacter:: IsOnBattle( )
 
 bool CCharacter::CanAttack( )
 {
-    if(CharType = 4) //it's an npc
-    {
-        //Log(MSG_DEBUG,"NPC battle sequence (CanAttack check)");
-        //always return true for an NPC
-        return true;
-    }
+
     clock_t etime = clock() - Battle->lastAtkTime;
+    if(CharType == 4) //it's an npc
+    {
+
+        //Log(MSG_DEBUG, "It's an NPC so set speed to 1");
+        //always return true for an NPC
+        Stats->Attack_Speed = 1;
+    }
     if (Stats->Attack_Speed < 1)
     {
 
