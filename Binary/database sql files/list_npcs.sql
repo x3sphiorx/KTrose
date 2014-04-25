@@ -3,14 +3,14 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Generation Time: Dec 07, 2012 at 09:53 AM
+-- Generation Time: Apr 25, 2014 at 11:40 AM
 -- Server version: 5.0.45
 -- PHP Version: 5.2.3
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 -- 
--- Database: `irose`
+-- Database: `ktrose`
 -- 
 
 -- --------------------------------------------------------
@@ -19,8 +19,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 -- Table structure for table `list_npcs`
 -- 
 
-DROP TABLE IF EXISTS `list_npcs`;
-CREATE TABLE IF NOT EXISTS `list_npcs` (
+CREATE TABLE `list_npcs` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
   `type` int(11) default NULL,
@@ -30,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `list_npcs` (
   `y` float default NULL,
   `dialogid` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=159 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=170 ;
 
 -- 
 -- Dumping data for table `list_npcs`
@@ -194,4 +193,15 @@ INSERT INTO `list_npcs` (`id`, `name`, `type`, `map`, `dir`, `x`, `y`, `dialogid
 (155, '[Cleric] Jude', 1251, 62, 153.435, 5767.72, 4687.55, 351),
 (156, '[Sikuku Resident] Parah', 1260, 62, 17.989, 5819.41, 4634.66, 0),
 (157, '[Kuro Tejina Staff] Keako ', 1043, 22, 187, 5828, 5096, 143),
-(158, '[Kuro-Tejina Staff] Buffy', 1024, 1, 185, 5226, 5218, 0);
+(158, '[Kuro-Tejina Staff] Buffy', 1024, 1, 185, 5226, 5218, 0),
+(159, 'Adventurers Plains Base Crystal', 1045, 22, 10, 5684.66, 5374.99, 0),
+(160, 'Breezy Hills Base Crystal', 1045, 23, 10, 5045.27, 5092.64, 0),
+(161, 'Luxem Tower Base Crystal', 1045, 21, 10, 5342.88, 5282.87, 0),
+(162, 'Zant Base Crystal', 1045, 1, 10, 5240.3, 5192.31, 0),
+(163, 'El Verloon Base Crystal', 1045, 24, 10, 5522.58, 5378.41, 0),
+(164, 'Anima Lake Base Crystal', 1045, 25, 10, 5491.27, 5358.31, 0),
+(165, 'Forest of Wisdom Base Crystal', 1045, 26, 10, 5681, 5102.19, 0),
+(166, 'Junon Polis Base Crystal', 1045, 2, 10, 5515.01, 5285.09, 0),
+(167, 'Gorge of Silence Base Crystal', 1045, 28, 10, 5199.14, 4907.07, 0),
+(168, 'Kenji Beach Base Crystal', 1045, 27, 10, 5217.27, 5325.06, 0),
+(169, '[BUFF] Genius', 1025, 1, 185, 5236, 5228, 0);
