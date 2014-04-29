@@ -55,7 +55,7 @@ QUESTCOND(001)
 		        break;
             case 2:
                 retVal = (tempValue >= curQst->nValue);
-		        break;    
+		        break;
 		    case 3:
                 retVal = (tempValue < curQst->nValue);
 		        break;
@@ -366,7 +366,7 @@ QUESTCOND(010)
     return QUEST_SUCCESS;
 }
 
-//Object Variable
+//Compare Object Variable
 QUESTCOND(011)
 {
 
