@@ -171,7 +171,7 @@ QUESTREWD(002)
     //dword iDataCnt;    pos 0x00
 	//dword iType;       pos 0x04 union. This or
 	//short m_mVarNo     pos 0x04 this +
-	//word m_wVarTYPE;   pos 0x06                Type of quest variable 
+	//word m_wVarTYPE;   pos 0x06                Type of quest variable
                                                  //   0  GetVarType = "ActiveQuest"
                                                  //   16  GetVarType = "SwitchBit"
                                                  //   32  GetVarType = "Remaining Time"
@@ -395,6 +395,24 @@ QUESTREWD(004)
 QUESTREWD(005)
 {
 	GETREWDDATA(005);
+	//byte btTarget;            // pos 0x00
+    //union
+    //{
+	//	byte btEquation;      // pos 0x02 apparently should be 0x01
+	//	word nEquation;
+	//};
+	//byte btEquation;          // pos 0x01
+	//word nEquation;           // pos 0x02
+	//int iValue;               // pos 0x04
+	//dword iItemSN;            // pos 0x06
+	//union
+    //{
+	//	byte btPartyOpt;      // pos 0x0a
+	//	word nPartyOpt;
+	//};
+	//word nItemOpt;            // pos 0x0c
+	//word nSkill. Co-opting nItemOpt as a skill id
+	word nSkill = data->nItemOpt;
 	if( client->questdebug )
         server->SendPM(client, "Quest reward 005 using equation %i", data->btEquation);
 	switch(data->btTarget)
@@ -473,6 +491,11 @@ QUESTREWD(005)
 			}
 		}
 		break;
+		case 3://Recieve Buff. start battle so that AIP can actually do the buffing based on RefVar values
+		{
+		    CCharacter* monster = GServer->GetMonsterByID(client->NPCvar,client->Position->Map);
+		    monster->StartAction( client, SKILL_ATTACK, nSkill );
+		}
 		default:
                 break;
 	}
@@ -740,7 +763,7 @@ QUESTREWD(012)
 	// Not any more - PY
 }
 
-//Unknown
+//Execute Quest Trigger
 QUESTREWD(013)
 {
 	//	byte btWho               pos 0x00
