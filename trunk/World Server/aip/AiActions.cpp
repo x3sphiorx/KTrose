@@ -38,15 +38,15 @@ AIACT(002)
 
 	//Think this is crashing the server. Taken out for the time being.
     //lets have the NPC also say the LTB string over the regular message system. This will show up green ^-^
-	//CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
+	CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
     //if(thisMonster->CharType == TNPC) // check if it is an NPC and not a normal monster.
 	//{
-    //	BEGINPACKET( pak, 0x0784 );
-    //    ADDSTRING( pak, GServer->Ltbstring[data->iStrID].NPCname );
-    //    ADDBYTE( pak, 0 );
-    //    ADDSTRING( pak, GServer->Ltbstring[data->iStrID].LTBstring );
-   //     ADDBYTE( pak, 0 );
-    //    GServer->SendToVisible(&pak, thisMonster);
+    	BEGINPACKET( pak, 0x0784 );
+        ADDSTRING( pak, GServer->Ltbstring[data->iStrID].NPCname );
+        ADDBYTE( pak, 0 );
+        ADDSTRING( pak, GServer->Ltbstring[data->iStrID].LTBstring );
+        ADDBYTE( pak, 0 );
+        GServer->SendToVisible(&pak, thisMonster);
     //}
 	return AI_SUCCESS;
 }
@@ -364,7 +364,7 @@ AIACT(006)
 	return AI_SUCCESS;
 }
 
-//Unknown
+//Special attack
 AIACT(007)
 {
 	//CObjCHAR::Special_ATTACK
@@ -377,17 +377,23 @@ AIACT(008)
 {
 	//dword iDistance;	//Pos: 0x00
 	//byte cSpeed;	//Pos: 0x04
-	//Some weird shit going on here
-	//move within some sort of distance of target (i think possibly % iDistance of distance between target)(run away?)
+	//move towards target. Stop at a specified precentage away from target
 	//Log(MSG_DEBUG, "AIACT(008)");
 	GETAIACTDATA(008);
     CMonster* monster = reinterpret_cast<CMonster*>(entity);
     monster->UpdatePosition( );
+    CCharacter* target = entity->GetCharTarget( );
+	if(target == NULL)
+    {
+        return AI_FAILURE;
+    }
+    target->UpdatePosition();
 	int iDist = data->iDistance;//Get it to our coord system!
-	float xDist = monster->Position->current.x - monster->Position->source.x;
-	float yDist = monster->Position->current.y - monster->Position->source.y;
-	float nX = monster->Position->source.x + (xDist * iDist / 100);
-	float nY = monster->Position->source.y + (yDist * iDist / 100);
+	float xDist = target->Position->current.x - monster->Position->current.x;
+	float yDist = target->Position->current.y - monster->Position->current.y;
+	float fDistance = GServer->distance( entity->Position->current, target->Position->current);
+	float nX = monster->Position->current.x - (iDist * xDist / fDistance);
+	float nY = monster->Position->current.y - (iDist * yDist / fDistance);
 	monster->Position->destiny.x = nX;
 	monster->Position->destiny.y = nY;
 	monster->Stats->stance = data->cSpeed;
@@ -1134,7 +1140,7 @@ AIACT(028)
     CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
     switch(data->btMsgType)
     {
-        case 0: //whisper to client
+        case 0: //current field
             // don't think this is possible. No way to get a character to send it to??
         break;
         case 1: //shout to map

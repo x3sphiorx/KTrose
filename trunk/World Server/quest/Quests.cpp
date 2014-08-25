@@ -3,7 +3,7 @@
 
 void CWorldServer::ReadQSD(strings path, dword index){
 	CRoseFile* fh = new CRoseFile(path, FM_READ | FM_BINARY);
-	
+
     if(fh->IsOpen())
     { // goto done;
 
@@ -150,6 +150,7 @@ void CWorldServer::LoadQuestData(){
 	qstRewdFunc[28] = &QUEST_REWD_028;
 	qstRewdFunc[29] = &QUEST_REWD_029;
 	qstRewdFunc[30] = &QUEST_REWD_030;
+	qstRewdFunc[50] = &QUEST_REWD_050;
 
 	delete stbQuest;
 }

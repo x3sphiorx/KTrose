@@ -547,6 +547,7 @@ bool CWorldServer::pakStopChar( CPlayer* thisclient, CPacket* P )
 // Spawn NPC
 bool CWorldServer::pakSpawnNPC( CPlayer* thisclient, CNPC* thisnpc )
 {
+	//Log(MSG_DEBUG,"spawning NPC type %i at X: %f Y: %f.",thisnpc->npctype,thisnpc->pos.x,thisnpc->pos.y);
 	BEGINPACKET( pak, 0x791 );
     ADDWORD( pak, thisnpc->clientid );
 	ADDFLOAT( pak, thisnpc->pos.x*100 );

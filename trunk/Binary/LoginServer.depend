@@ -103,3 +103,110 @@
 1196084064 source:g:\osprose\login server\main.cpp
 	"loginserver.h"
 
+1369054454 source:f:\triggersoft\ktrose server svn\trunk\common\socketbase.cpp
+	"sockets.h"
+
+1369055543 f:\triggersoft\ktrose server svn\trunk\common\sockets.h
+	<windows.h>
+	<winsock2.h>
+	<unistd.h>
+	<netinet/in.h>
+	<sys/socket.h>
+	<sys/types.h>
+	<arpa/inet.h>
+	<sys/ioctl.h>
+	<cstdarg>
+	<errno.h>
+	<mysql/mysql.h>
+	<cstdio>
+	<cstdlib>
+	<iostream>
+	<vector>
+	<string>
+	<cstdio>
+	<exception>
+	<time.h>
+	<assert.h>
+	<math.h>
+	<cmath>
+	<map>
+	<pthread.h>
+	<vector>
+	<csignal>
+	"log.h"
+	"rosecrypt.hpp"
+	"config.h"
+	"database/database.h"
+
+1369054456 f:\triggersoft\ktrose server svn\trunk\common\log.h
+
+1369054454 f:\triggersoft\ktrose server svn\trunk\common\rosecrypt.hpp
+
+1369054454 f:\triggersoft\ktrose server svn\trunk\common\config.h
+
+1369054454 f:\triggersoft\ktrose server svn\trunk\common\database\database.h
+	"../sockets.h"
+
+1369054456 source:f:\triggersoft\ktrose server svn\trunk\common\socketclient.cpp
+	"sockets.h"
+	"seh.hpp"
+	"config.h"
+
+1369054456 f:\triggersoft\ktrose server svn\trunk\common\seh.hpp
+	<windows.h>
+	<excpt.h>
+	<setjmp.h>
+
+1390586063 source:f:\triggersoft\ktrose server svn\trunk\common\socketserver.cpp
+	"sockets.h"
+	<iostream>
+
+1369054454 source:f:\triggersoft\ktrose server svn\trunk\common\config.cpp
+	<cstdio>
+	<cstring>
+	<cstdlib>
+	<ctype.h>
+
+1369054454 source:f:\triggersoft\ktrose server svn\trunk\common\database\database.cpp
+	"database.h"
+	"../log.h"
+
+1369054454 source:f:\triggersoft\ktrose server svn\trunk\common\globals.cpp
+	"sockets.h"
+
+1369054454 source:f:\triggersoft\ktrose server svn\trunk\common\log.cpp
+	<conio.h>
+	<windows.h>
+	<cstdio>
+	<cstdio>
+	<string>
+	<time.h>
+	"log.h"
+
+1369054456 source:f:\triggersoft\ktrose server svn\trunk\common\rosecrypt.cpp
+	<fstream>
+	<iostream>
+	"rosecrypt.hpp"
+	<cstdlib>
+
+1369054317 source:f:\triggersoft\ktrose server svn\trunk\login server\extrafunction.cpp
+	"loginserver.h"
+
+1369054317 f:\triggersoft\ktrose server svn\trunk\login server\loginserver.h
+	"../common/sockets.h"
+	"datatype.h"
+
+1369054317 f:\triggersoft\ktrose server svn\trunk\login server\datatype.h
+
+1391783719 source:f:\triggersoft\ktrose server svn\trunk\login server\loginpackets.cpp
+	"loginserver.h"
+
+1369054317 source:f:\triggersoft\ktrose server svn\trunk\login server\loginclient.cpp
+	"loginserver.h"
+
+1369054317 source:f:\triggersoft\ktrose server svn\trunk\login server\loginserver.cpp
+	"loginserver.h"
+
+1369054317 source:f:\triggersoft\ktrose server svn\trunk\login server\main.cpp
+	"loginserver.h"
+
