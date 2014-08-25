@@ -496,6 +496,7 @@ QUESTREWD(005)
 		    CCharacter* monster = GServer->GetMonsterByID(client->NPCvar,client->Position->Map);
 		    monster->StartAction( client, SKILL_ATTACK, nSkill );
 		}
+		break;
 		default:
                 break;
 	}
@@ -763,7 +764,7 @@ QUESTREWD(012)
 	// Not any more - PY
 }
 
-//Execute Quest Trigger
+//Execute Quest Trigger with time delay. STILL NEEDS TO BE CODED
 QUESTREWD(013)
 {
 	//	byte btWho               pos 0x00
@@ -772,7 +773,7 @@ QUESTREWD(013)
 	//word nNameLength           pos 0x06
 	//string szTriggerName       pos 0x08
 	//dword m_HashNextTrigger    pos 0x06 + nNameLength?
-	//looks like a quest trigger to me
+	//looks like a quest trigger with a timer delay to me
 	GETREWDDATA(013);
 	char* tempName = reinterpret_cast<char*>(&data->szTriggerName) - 2;
 	dword hash = MakeStrHash(tempName);
@@ -861,7 +862,7 @@ QUESTREWD(019)
 	//word nZoneNo;           //pos 0x00
 	//word nTeamNo;           //pos 0x02
 	//word nTriggerLength;    //pos 0x04 This is definitely NOT the length of the following name. PY
-	//string TriggerName;     //pos 0x06 + nTriggerlength more bytes. Name always appears to be 17 bytes long
+	//string TriggerName;     //pos 0x06 + nTriggerlength more bytes. name is zero terminated  so m_hashtrigger position varies
 	//dword m_HashTrigger;
     //word m_HashTrigger;     //pos 0x17 only has 2 bytes not 4. PY
 
@@ -1071,5 +1072,9 @@ QUESTREWD(030) //Reset skills
         client->pskilllvl[i] = 0;
     }
     client->savedata();
+    return QUEST_SUCCESS;
+}
+QUESTREWD(050) //Respawn NPC after time delay. Used only on the missing children in Zant
+{
     return QUEST_SUCCESS;
 }

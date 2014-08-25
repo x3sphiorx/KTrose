@@ -222,7 +222,7 @@ QUESTCOND(004)
                 return QUEST_FAILURE;
             }
         }
-        else
+        else //this needs to be recoded. It doesn't do a damn thing right now WTF?
         {
             //item slot is not 13
             // Check equipped items for a specific item? - Drakia
@@ -243,8 +243,8 @@ QUESTCOND(004)
 QUESTCOND(005)
 {
 	//byte btIsLeader    pos 0x00
-	//int iLevel         pos 0x02
-	//byte btReversed    pos 0x04
+	//int iLevel         pos 0x04
+	//byte btReversed    pos 0x08
 	GETCONDDATA(005);
     return QUEST_SUCCESS;
 }
@@ -357,9 +357,15 @@ QUESTCOND(010)
 	// I think this is a percentage chance range.
 	// might be something to do with the item count though???
 
-	//int randv = GServer->RandNumber(0,100);
-	//if(randv >= data->btLowPcnt && randv <= data->btHighPcnt)return QUEST_SUCCESS;
-
+	int randv = GServer->RandNumber(0,100);
+	if(randv >= data->btLowPcnt && randv <= data->btHighPcnt)
+	{
+	    return QUEST_SUCCESS;
+	}
+    else
+    {
+       return QUEST_FAILURE;
+    }
 	// problem is that this is only called in quest triggers from the client where it has already
 	// passed the random number test.
 	// we need to always return true or some quests will never finish
@@ -592,7 +598,7 @@ QUESTCOND(020)
     return QUEST_SUCCESS;
 }
 
-//Unknown
+//Distance check
 QUESTCOND(021)
 {
     // byte btSelObjType pos 0x00

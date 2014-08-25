@@ -61,12 +61,14 @@ AICOND(001)
 	}
     else
     {
-		if(entity->damagecounter < data->iDamage)
+		//PY this is wrong. if data->cRecvOrGive is 1 then it should return FALSE
+		/*if(entity->damagecounter < data->iDamage)
         {
             entity->damagecounter = 0;
             //Log(MSG_DEBUG, "AIcond(001) Success ");
             return AI_SUCCESS;
-        }
+        }*/
+        return AI_FAILURE;
 	}
     return AI_FAILURE;
 
@@ -164,11 +166,11 @@ AICOND(002)
     	}
     }
 	return AI_FAILURE;
-	
+
 	//count how many aiobj between nLevelDiff and nLevelDiff2 who is btIsAllied within iDistance
 	//must be >= wChrNum
 	//doesn't seem to work that way though
-	//it would seem that LevelDiff is a maximum level and LevelDiff2 is a minimum level. 
+	//it would seem that LevelDiff is a maximum level and LevelDiff2 is a minimum level.
 	//just subtract each from 65535 to get the level range. No difference involved at all. PY
 	//leveldiff2 often uses only the first byte so it is taken at face value.
 
@@ -179,22 +181,22 @@ AICOND(002)
     int minlevel = 0;
     CMonster* monster = reinterpret_cast<CMonster*>(entity);
     //Log(MSG_INFO,"Minlevel: %i  Maxlevel: %i",data->nLevelDiff2,data->nLevelDiff);
-    
-    if(data->nLevelDiff2 > 255) 
+
+    if(data->nLevelDiff2 > 255)
         minlevel = 65535 - data->nLevelDiff2;
     else
         minlevel = data->nLevelDiff2;
-    if(data->nLevelDiff > 255) 
+    if(data->nLevelDiff > 255)
         maxlevel = 65535 - data->nLevelDiff;
     else
-        maxlevel = data->nLevelDiff;   
-    
+        maxlevel = data->nLevelDiff;
+
     if(minlevel > maxlevel) //Sometimes min and max are reversed. After all we just need to know if someting is between the two
     {
          int tmpmax = maxlevel;
          int tmpmin = minlevel;
          minlevel = tmpmax;
-         maxlevel = tmpmin;      
+         maxlevel = tmpmin;
     }
     //Log(MSG_INFO,"Minlevel: %i  Maxlevel: %i",minlevel,maxlevel);
 	UINT chrCount = 0;
@@ -245,7 +247,7 @@ AICOND(002)
             if(other == NULL) continue;
             //Log(MSG_INFO, "2");
             eCount++;
-            
+
             if(other->Stats->Level > maxlevel) continue;
     		if(other->Stats->Level < minlevel) continue;
             int iDistance = (int)GServer->distance( other->Position->current, entity->Position->current );
@@ -327,7 +329,7 @@ AICOND(004)
 	return AI_FAILURE;
 }
 
-//Check AB (1)
+//Check Ability of my Target
 AICOND(005)
 {
 	/*
@@ -337,7 +339,12 @@ AICOND(005)
 	*/
 	//Log(MSG_DEBUG, "AICOND(005) called");
     GETAICONDDATA(005);
-
+    CCharacter* target = entity->GetCharTarget( );
+	if(target == NULL)
+    {
+        //Log(MSG_DEBUG, "AICOND(004) found no valid target");
+        return AI_FAILURE;
+    }
 	//cAbType
 	//0 = Level
 	//1 = Attack
@@ -348,7 +355,7 @@ AICOND(005)
 
 	//Check if "ability" (cMoreLess == 0 then >= else <=) iDiff
 	//Log(MSG_DEBUG, "Check AB (1)");
-	int value = AI_GetAbility(entity, data->cAbType);
+	int value = AI_GetAbility(target, data->cAbType); //PY This should be checking my target's ability NOT MY OWN. Corrected now
     //Log(MSG_DEBUG, "Check AB (1) type %i diff %i", data->cAbType, data->iDiff);
 	if(value < 0) return AI_FAILURE;
 	if(data->cMoreLess == 0)
@@ -478,12 +485,16 @@ AICOND(008)
 }
 
 //check target
+//PY This is actually incorrect. Should be comparing my target with my destination character. TRUE if they are different
+//To be corrected!!!
 AICOND(009)
 {
 	//Do i have a target?
     //CWorldEntity* target = entity->thisZone->GetEntity(entity->_TargetID);
     //if(target == NULL){entity->_TargetID = 0; return AI_FAILURE;}
     //return AI_SUCCESS;
+
+    //TO BE RECODED
     CCharacter* target = entity->GetCharTarget( );
     if(target == NULL) return AI_FAILURE;
     return AI_SUCCESS;
@@ -496,6 +507,10 @@ AICOND(010)
 	//byte cMoreLess;	//Pos: 0x01
 
 	//Is my ability >= or <= than my targets
+	//PY This is wrong too. Should be comparing ability of my target against the one that just hit me
+	//NOT against MY ability
+
+	//TO BE RECODED
 	GETAICONDDATA(010);
     //CWorldEntity* target = entity->thisZone->GetEntity(entity->_TargetID);
     CCharacter* target = entity->GetCharTarget( );
@@ -519,6 +534,7 @@ AICOND(010)
 }
 
 //Check AB (3)
+//PY Again this has to be my Attacker's ability. NOT my own or even my Target's
 AICOND(011)
 {
 	//byte cAbType;	//Pos: 0x00
@@ -528,7 +544,13 @@ AICOND(011)
 	GETAICONDDATA(011);
 	dword tValue = data->iValue;
 	//if(tValue == 0)tValue = AI_GetAbility(entity, data->cAbType);
-	int myValue = AI_GetAbility(entity, data->cAbType);
+	CCharacter* target = entity->GetCharTarget( );
+	if(target == NULL)
+    {
+        //Log(MSG_DEBUG, "AICOND(004) found no valid target");
+        return AI_FAILURE;
+    }
+	int myValue = AI_GetAbility(target, data->cAbType);
 	//CCharacter* target = entity->GetCharTarget( );
 	//if(target == NULL)
     //{
@@ -611,13 +633,17 @@ AICOND(013)
        return AI_FAILURE;
     }
 
-    if (data->btStatusType == 1) // check for buffs
+    switch(data->btStatusType)
     {
-        buffs = GServer->BuildUpBuffs(target);
-    }
-    else  // check for debuffs
-    {
-        buffs = GServer->BuildDeBuffs(target);
+        case 0: //debuff
+            buffs = GServer->BuildDeBuffs(target);
+        break;
+        case 1: //buff
+            buffs = GServer->BuildUpBuffs(target);
+        break;
+        case 2: //effect such as burning
+            //not sure how to handle this so i will come back to it. PY
+        break;
     }
     //Log(MSG_DEBUG, "Target: %i btStutusType: %i buffs: %i btHave: %i", target->clientid, data->btStatusType, buffs, data->btHave);
     if (data->btHave == 1) //True if HAS buffs
@@ -690,7 +716,7 @@ AICOND(014)
 	return AI_FAILURE;
 }
 
-//Check Variable (2) (WorldVAR)
+//Check Variable (2) (WorldVAR) //PY should work just like NPC ObjVar.  To Be Coded later
 AICOND(015)
 {
 	//word nVarIDX;	//Pos: 0x00
@@ -737,8 +763,8 @@ AICOND(018)
 	CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
 	CMap* map = GServer->MapList.Index[thisMonster->Position->Map];
 	CCharacter* caller = map->GetCharInMap( thisMonster->owner );
-	//if(caller == NULL) return AI_FAILURE; // I think this is wrong. It should return true if there is no owner. Otherwise orphaned bonfires will live forever
-    if(caller == NULL) return AI_SUCCESS;
+	if(caller == NULL ) return AI_FAILURE; // I think this is wrong. It should return true if there is no owner. Otherwise orphaned bonfires will live forever
+    if(thisMonster->owner == 0) return AI_FAILURE; //Monster has no owner
     //Log(MSG_DEBUG, "AICOND(018 2)");
     //if(entity->_EntityType != ENTITY_MONSTER) return AI_FAILURE;
     //CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
@@ -771,13 +797,13 @@ AICOND(019)
 	return AI_FAILURE;
 }
 
-//Check AB (4)
+//Check My AB (4) NOT target's
 AICOND(020)
 {
 	//byte btAbType;	//Pos: 0x00
 	//dword iValue;	    //Pos: 0x04
 	//byte btOp;	    //Pos: 0x08
-	
+
 
 	//cAbType
 	//0 = Level
@@ -787,12 +813,8 @@ AICOND(020)
 	//4 = HP
 	//5 = Charm
 	GETAICONDDATA(020);
-	CCharacter* target = NULL;
-	target = entity->GetCharTarget( );
-	if(target == NULL)
-	    return AI_FAILURE;
     //Log(MSG_DEBUG, "Check AB (4) type %i iValue %i", data->btAbType, data->iValue);
-	int value = AI_GetAbility(target, data->btAbType);
+	int value = AI_GetAbility(entity, data->btAbType);
 	if(value < 0) return AI_FAILURE;
 	if(OperateValues<int>(data->btOp, &value, data->iValue)) return AI_SUCCESS;
     //Log(MSG_INFO,"check ab (4) successfull");
@@ -800,22 +822,16 @@ AICOND(020)
 }
 
 //Do I have a caller
-//LMA: actually the question is, "am I an orphan?").
+//PY. Needs to return AI_SUCCESS if I have no owner
 AICOND(021)
 {
 	//Do i have a "CALLER" ??Possibly the one who summoned the monster??
-	// more like Am I an orphan?
 	GETAICONDDATA(021);
-    //LogDebug( "AICOND(021) Do i have a 'CALLER'?");
 
 	if(!entity->IsMonster())return AI_SUCCESS;
     CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
-    //Log(MSG_DEBUG, "AICOND(021) Checking now");
-    //if(entity->_EntityType != ENTITY_MONSTER) return AI_FAILURE;
-    //CMonster* thisMonster = reinterpret_cast<CMonster*>(entity);
-    //CWorldEntity* caller = thisMonster->thisZone->GetEntity(thisMonster->_CallerID);
 	if(thisMonster->owner == 0) return AI_SUCCESS;
-    //Log(MSG_DEBUG, "AICOND(021) Yes I am an orphan");
+    //Log(MSG_DEBUG, "AICOND(021) Yes I Have no owner");
 	return AI_FAILURE;
 }
 
@@ -840,7 +856,7 @@ AICOND(022)
 	return AI_FAILURE;
 }
 
-//Check Time (3) (Game map time?)
+//Check Time (3) (World time?)
 AICOND(023)
 {
 	//dword ulTime;	//Pos: 0x00
@@ -944,7 +960,8 @@ AICOND(027
             int iDistance = (int)GServer->distance( other->Position->current, entity->Position->current );
             if(iDistance > searchDistance) continue;
     		chrCount++;
-    		if(iDistance < nearestDistance){
+    		if(iDistance < nearestDistance)
+    		{
     			nearestDistance = iDistance;
     			entity->nearChar = other;
     		}

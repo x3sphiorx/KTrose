@@ -13,7 +13,7 @@ QUESTREWD(018);QUESTREWD(019);QUESTREWD(020);
 QUESTREWD(021);QUESTREWD(022);QUESTREWD(023);
 QUESTREWD(024);QUESTREWD(025);QUESTREWD(026);
 QUESTREWD(027);QUESTREWD(028);QUESTREWD(029);
-QUESTREWD(030);
+QUESTREWD(030);QUESTREWD(050);
 
 struct STR_REWD_000 {
 	dword iQuestSN;
@@ -30,13 +30,13 @@ struct STR_REWD_001 {
 	byte btPartyOpt;
 };
 
-struct STR_REWD_002 
+struct STR_REWD_002
 {
 	dword iDataCnt;
 	STR_QUEST_DATA* CheckData;
 };
 
-struct STR_REWD_003 
+struct STR_REWD_003
 {
 	dword iDataCnt;              //pos 0x00
 	dword iType;                 //pos 0x04
@@ -53,10 +53,10 @@ struct STR_REWD_004 {
 	STR_QUEST_DATA* CheckData;
 };
 
-struct STR_REWD_005 
+struct STR_REWD_005
 {
 	byte btTarget;            // pos 0x00
-    //union 
+    //union
     //{
 	//	byte btEquation;      // pos 0x02 apparently should be 0x01
 	//	word nEquation;
@@ -65,7 +65,7 @@ struct STR_REWD_005
 	word nEquation;           // pos 0x02
 	int iValue;               // pos 0x04
 	dword iItemSN;            // pos 0x06
-	union 
+	union
     {
 		byte btPartyOpt;      // pos 0x0a
 		word nPartyOpt;
@@ -108,9 +108,9 @@ struct STR_REWD_009 {
 struct STR_REWD_010 {
 };
 
-struct STR_REWD_011 
+struct STR_REWD_011
 {
-	union	
+	union
     {
 		byte btWho;
 		word usWho;
@@ -121,7 +121,7 @@ struct STR_REWD_011
 };
 
 struct STR_REWD_012 {
-	union 
+	union
     {
 		byte btMsgType;
 		int iMsgType;
@@ -140,9 +140,9 @@ struct STR_REWD_013 {
 	dword m_HashNextTrigger;
 };
 
-struct STR_REWD_014 
+struct STR_REWD_014
 {
-	union 
+	union
     {
 		byte btOp;
 		int iOp;
@@ -168,7 +168,7 @@ struct STR_REWD_018 {
 	string Data;
 };
 
-struct STR_REWD_019 
+struct STR_REWD_019
 {
 	word nZoneNo;           //pos 0x00
 	word nTeamNo;           //pos 0x02
@@ -178,7 +178,7 @@ struct STR_REWD_019
     word m_HashTrigger;     //pos 0x17 only has 2 bytes not 4. PY
 };
 
-struct STR_REWD_020 
+struct STR_REWD_020
 {
 	byte btNoType;
 };
@@ -193,7 +193,7 @@ struct STR_REWD_022 {
 	byte btOp;
 };
 
-struct STR_REWD_023 
+struct STR_REWD_023
 {
 };
 
@@ -231,5 +231,11 @@ struct STR_REWD_029 {
 
 struct STR_REWD_030 //reset skills
 {
-       
+
 };
+
+struct STR_REWD_050 //respawn NPC after time delay
+{
+
+};
+
